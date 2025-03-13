@@ -226,6 +226,10 @@ function RIFTRAFT.VoidCardArea:click()
             if not to_send.config.center.discovered then
                 discover_card(to_send.config.center)
             end
+            if not next(SMODS.find_card(to_send.config.center.key)) then
+                G.GAME.used_jokers[to_send.config.center.key] = nil
+            end
+
             G.E_MANAGER:add_event(Event({trigger = 'immediate', func = function()
                 SMODS.calculate_context({add_to_void = true, added = {to_send}})
                 return true
@@ -243,6 +247,10 @@ function RIFTRAFT.VoidCardArea:click()
             if not to_send.config.center.discovered then
                 discover_card(to_send.config.center)
             end
+            if not next(SMODS.find_card(to_send.config.center.key)) then
+                G.GAME.used_jokers[to_send.config.center.key] = nil
+            end
+
             G.E_MANAGER:add_event(Event({trigger = 'immediate', func = function()
                 SMODS.calculate_context({add_to_void = true, added = {to_send}})
                 return true

@@ -79,6 +79,7 @@ RIFTRAFT.RiftCard{
         for i,v in ipairs(G.riftraft_rifthand.highlighted) do
             v:add_to_deck()
             draw_card(G.riftraft_rifthand, G.consumeables, i*100/#G.riftraft_rifthand.highlighted, "up", false, v)
+            G.GAME.used_jokers[v.config.center.key] = true
             table.insert(added, v)
         end
         G.E_MANAGER:add_event(Event({trigger = 'immediate', func = function()
@@ -190,6 +191,7 @@ RIFTRAFT.RiftCard{
         for i,v in ipairs(G.riftraft_rifthand.highlighted) do
             v:add_to_deck()
             draw_card(G.riftraft_rifthand, G.jokers, 1, "up", false, v)
+            G.GAME.used_jokers[v.config.center.key] = true
             table.insert(added, v)
         end
         G.E_MANAGER:add_event(Event({trigger = 'immediate', func = function()
@@ -275,6 +277,7 @@ RIFTRAFT.RiftCard{
             v:add_to_deck()
             if v.ability.consumeable then
                 draw_card(G.riftraft_rifthand, G.consumeables, 1, "up", false, v)
+                G.GAME.used_jokers[v.config.center.key] = true
             elseif v.ability.set == "Default" or v.ability.set == "Enhanced" then
                 G.deck.config.card_limit = G.deck.config.card_limit + 1
                 table.insert(G.playing_cards, v)
@@ -282,6 +285,7 @@ RIFTRAFT.RiftCard{
                 draw_card(G.riftraft_rifthand, G.deck, 1, "up", false, v)
             elseif v.ability.set == "Joker" then
                 draw_card(G.riftraft_rifthand, G.jokers, 1, "up", false, v)
+                G.GAME.used_jokers[v.config.center.key] = true
             end
             table.insert(added, v)
         end
@@ -836,10 +840,12 @@ RIFTRAFT.RiftCard{
     
             void_v:set_edition(main_edition, true)
             void_v:add_to_deck()
+            G.GAME.used_jokers[void_v.config.center.key] = true
             draw_card(G.riftraft_rifthand, G.jokers, 1, "up", false, void_v)
     
             main_v:set_edition({negative = true}, true, true)
             main_v:remove_from_deck()
+            G.GAME.used_jokers[main_v.config.center.key] = nil
             draw_card(G.jokers, G.riftraft_rifthand, 1, "down", false, main_v)
     
             table.insert(added, main_v)
@@ -903,6 +909,7 @@ RIFTRAFT.RiftCard{
                 v:set_edition({negative = true}, true, true)
                 v:remove_from_deck()
                 draw_card(G.jokers, G.riftraft_rifthand, 1, "down", false, v)
+                G.GAME.used_jokers[v.config.center.key] = nil
                 table.insert(added, v)
             end
         end

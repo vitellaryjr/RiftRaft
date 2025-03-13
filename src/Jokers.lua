@@ -989,7 +989,7 @@ if SMODS.Mods["Cryptid"] then
     local card_add = Card.set_card_area
     function Card:set_card_area(area)
         card_add(self, area)
-        local flower = find_joker("j_riftraft_paleflower")[1]
+        local flower = SMODS.find_card("j_riftraft_paleflower")[1]
         if self.edition and self.edition.negative and (not self.ability or not self.ability.eternal) and flower then
             local is_valid = false
             for k,v in ipairs(valid_areas) do
@@ -1025,7 +1025,7 @@ if SMODS.Mods["Cryptid"] then
             return
         end
         card_set_edition(self, edition, immediate, silent)
-        local flower = find_joker("j_riftraft_paleflower")[1]
+        local flower = SMODS.find_card("j_riftraft_paleflower")[1]
         if self.area and self.edition and self.edition.negative and (not self.ability or not self.ability.eternal) and flower then
             destroy_negative(self, flower)
         end
