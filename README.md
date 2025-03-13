@@ -18,3 +18,10 @@ there are over 20 Rift Cards available to do various things to Void Cards, such 
 this mod also adds ~15 jokers that interact with the content of the mod in various ways (all art drawn by me!)
 
 ![1741894846-Balatro](https://github.com/user-attachments/assets/94ca056a-e198-4a5a-bd6a-1de13e0b8e57)
+
+# How to install
+first, make sure you've installed [Lovely and Steamodded](https://github.com/Steamodded/smods/wiki). then, download the code of the Github project by using the Code dropdown at the top of the page:
+
+![1741895361-vitellaryjrRiftRaft_a_balatro_mod_about_negatives_](https://github.com/user-attachments/assets/895190cf-4973-4c1b-bcc4-a042239c364f)
+
+once you've downloaded the project as a .zip, drag the __folder contained inside the .zip__ into your Balatro Mods folder. and that should be everything!
