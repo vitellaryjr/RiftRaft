@@ -1,0 +1,306 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# make Negation and Vastness render with the negative shader
+# [[patches]]
+# [patches.regex]
+# target = 'card.lua'
+# pattern = "(?<indent>[\t ]*)if \\(self.edition and self.edition.negative\\) or \\((?<a>self.ability.name == 'Antimatter') and \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
+# position = 'at'
+# root_capture = 'a'
+# payload = "(self.ability.name == 'Antimatter' or self.config.center_key == 'v_riftraft_negative_hone' or self.config.center_key == 'v_riftraft_negative_consume')"
+
+# prevent Negation and Vastness from rendering with the voucher shader
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "(?<indent>[\t ]*)if \\(self.ability.set == 'Voucher' or self.config.center.demo\\) and \\((?<a>self.ability.name ~= 'Antimatter') or not \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
+position = 'at'
+root_capture = 'a'
+payload = "(self.ability.name ~= 'Antimatter' and self.config.center_key ~= 'v_riftraft_negative_hone' and self.config.center_key ~= 'v_riftraft_negative_consume')"
+
+# increase negative odds if Negation is purchased
+# [[patches]]
+# [patches.pattern]
+# target = '=[SMODS _ "src/overrides.lua"]'
+# pattern = "v.weight = G.P_CENTERS[v.name]:get_weight()   -- Apply game modifiers where appropriate (defined in edition declaration)"
+# position = "after"
+# payload = '''
+# if v.name == "e_negative" then
+#     v.weight = v.weight * (G.GAME.riftraft_negative_rate or 1)
+# end
+# '''
+# match_indent = true
+
+# make consumables negative if Vastness is purchased
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = 'if card.ability.consumeable and not skip_materialize then card:start_materialize() end'
+position = "after"
+payload = '''
+if card.ability.consumeable and G.GAME.used_vouchers.v_riftraft_negative_consume then
+    local edition_poll = pseudorandom(pseudoseed('edition_consumeable'))
+    if edition_poll > (1 - 0.003*(G.GAME.riftraft_negative_rate or 1)) then
+        card:set_edition({negative = true})
+    end
+end
+'''
+match_indent = true
+# same thing but to crytpid's create_card override
+[[patches]]
+[patches.pattern]
+target = '=[SMODS Cryptid "lib/overrides.lua"]'
+pattern = '''
+if card.ability.consumeable and not skip_materialize then
+    card:start_materialize()
+end
+'''
+position = "after"
+payload = '''
+if card.ability.consumeable and G.GAME.used_vouchers.v_riftraft_negative_consume then
+    local edition_poll = pseudorandom(pseudoseed('edition_consumeable'))
+    if edition_poll > (1 - 0.003*(G.GAME.riftraft_negative_rate or 1)) then
+        card:set_edition({negative = true})
+    end
+end
+'''
+match_indent = true
+
+# allow playing cards to be negative if Vastness is purchased
+[[patches]]
+[patches.regex]
+target = '=[SMODS _ "src/game_object.lua"]'
+pattern = "(?<indent>[\t ]*)local _edition = poll_edition\\('standard_edition'..G.GAME.round_resets.ante, 2, (?<a>true)\\)"
+position = 'at'
+root_capture = 'a'
+payload = "(not RIFTRAFT.negative_playing_cards or not G.GAME.used_vouchers.v_riftraft_negative_consume)"
+
+# add an extra void card copy if Inversion Invasion is purchased
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''
+for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do
+    G.shop_jokers:emplace(create_card_for_shop(G.shop_jokers))
+end
+'''
+position = "after"
+payload = '''
+if G.GAME.used_vouchers.v_riftraft_riftshop_copy and (#G.riftraft_void.cards > 0) and (pseudorandom(pseudoseed('shop_should_voidcopy')) <= (RIFTRAFT.void_pack_rate * 0.25)) then
+    local to_copy = pseudorandom_element(G.riftraft_void.cards, pseudoseed('shop_voidcopy'..G.GAME.round_resets.ante))
+    local new_card = copy_card(to_copy)
+    create_shop_card_ui(new_card, nil, G.shop_jokers)
+    G.shop_jokers:emplace(new_card)
+    new_card.ability.riftraft_from_void = true
+end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''
+for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do
+    local new_shop_card = create_card_for_shop(G.shop_jokers)
+    G.shop_jokers:emplace(new_shop_card)
+    new_shop_card:juice_up()
+end
+'''
+position = "after"
+payload = '''
+if G.GAME.used_vouchers.v_riftraft_riftshop_copy and (#G.riftraft_void.cards > 0) and (pseudorandom(pseudoseed('shop_should_voidcopy')) <= (RIFTRAFT.void_pack_rate * 0.25)) then
+    local to_copy = pseudorandom_element(G.riftraft_void.cards, pseudoseed('shop_voidcopy'..G.GAME.round_resets.ante))
+    local new_card = copy_card(to_copy)
+    create_shop_card_ui(new_card, nil, G.shop_jokers)
+    G.shop_jokers:emplace(new_card)
+    new_card.ability.riftraft_from_void = true
+end
+'''
+match_indent = true
+
+# reroll booster packs in shop if Microtransaction is purchased
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = "for i = #G.shop_jokers.cards,1, -1 do"
+position = "before"
+payload = '''
+if G.GAME.used_vouchers.v_riftraft_booster_slut then
+    for i = #G.shop_booster.cards, 1, -1 do
+        local c = G.shop_booster:remove_card(G.shop_booster.cards[i])
+        c:remove()
+        c = nil
+    end
+end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = "for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do"
+position = "before"
+payload = '''
+if G.GAME.used_vouchers.v_riftraft_booster_slut then
+    local riftraft_orig_amount = G.GAME.modifiers.extra_boosters
+    local spawn_void = nil
+    local void_rate = RIFTRAFT.void_pack_rate
+    if #G.riftraft_void.cards == 0 or G.GAME.modifiers["riftraft_no_void"] or G.GAME.modifiers["riftraft_only_void"] then
+        -- void_rate = void_rate * 0.5 -- allows packs to spawn at a rarer rate even with nothing in the void
+        void_rate = 0
+    end
+    if G.GAME.riftraft_abyssal_deck or (pseudorandom(pseudoseed('pack_spawnvoid'..G.GAME.round_resets.ante)) <= void_rate) then
+        G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + 1
+        spawn_void = G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0)
+    end
+    local riftraft_tracked_packs = {}
+    local riftraft_pack_list = {}
+    if G.GAME.used_vouchers.v_riftraft_booster_gluttony then
+        for k, v in ipairs(G.P_CENTER_POOLS.Booster) do
+            if v.kind and not G.GAME.banned_keys[v.key] then
+                if not riftraft_tracked_packs[v.kind] then
+                    riftraft_tracked_packs[v.kind] = {}
+                    riftraft_tracked_packs[v.kind].kind = v.kind
+                    table.insert(riftraft_pack_list, riftraft_tracked_packs[v.kind])
+                end
+                table.insert(riftraft_tracked_packs[v.kind], v)
+                riftraft_tracked_packs[v.kind].full_weight = (riftraft_tracked_packs[v.kind].full_weight or 0) + (v.weight or 1)
+            end
+        end
+        G.GAME.modifiers.extra_boosters = #riftraft_pack_list - G.GAME.starting_params.boosters_in_shop
+        pseudoshuffle(riftraft_pack_list, pseudoseed('booster_glut'))
+    end
+    G.GAME.current_round.used_packs = {}
+    for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
+        if G.GAME.used_vouchers.v_riftraft_booster_gluttony and riftraft_pack_list[i] then
+            local packs = riftraft_pack_list[i]
+            local cume, it, center = packs.full_weight, 0, nil
+            local poll = pseudorandom(pseudoseed(('pack_glut_'..packs.kind)..G.GAME.round_resets.ante))*cume
+            for k, v in ipairs(packs) do
+                it = it + (v.weight or 1)
+                if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
+            end
+            G.GAME.current_round.used_packs[i] = center.key
+        else
+            local is_void = (i == spawn_void) or G.GAME.modifiers["riftraft_only_void"]
+            if is_void then
+                local voidpack_rng = pseudorandom(pseudoseed('pack_void_type'..G.GAME.round_resets.ante), 1, 13)
+                local voidpack_type = 1
+                if voidpack_rng > 4 then voidpack_type = voidpack_type + 1 end
+                if voidpack_rng > 8 then voidpack_type = voidpack_type + 1 end
+                if voidpack_rng > 12 then voidpack_type = voidpack_type + 1 end
+                if G.GAME.riftraft_abyssal_deck then
+                    voidpack_type = 4
+                end
+                G.GAME.current_round.used_packs[i] = "p_riftraft_voidpack" .. voidpack_type
+            end
+        end
+        if not G.GAME.current_round.used_packs[i] then
+            G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
+        end
+
+        local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
+        G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+        create_shop_card_ui(card, 'Booster', G.shop_booster)
+        card.ability.booster_pos = i
+        card:start_materialize()
+        G.shop_booster:emplace(card)
+        card:juice_up()
+        if is_void then
+            card:set_edition({negative = true})
+        end
+    end
+    G.GAME.modifiers.extra_boosters = riftraft_orig_amount
+end
+'''
+match_indent = true
+
+# increase rate rerolls increase by if Microtransaction is purchased
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "if not skip_increment then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 1 end"
+position = "after"
+payload = '''
+if not skip_increment and G.GAME.used_vouchers.v_riftraft_booster_slut then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 2 end
+'''
+match_indent = true
+
+# increase cards / choices per pack
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.set == 'Booster' then"
+position = "after"
+payload = '''
+    if G.GAME.used_vouchers.v_riftraft_cardpack_card then
+        self.ability.extra = (self.ability.extra or 2) + 1
+    end
+    if G.GAME.used_vouchers.v_riftraft_cardpack_choose then
+        self.ability.choose = (self.ability.choose or 1) + 1
+    end
+    if G.GAME.used_vouchers.v_riftraft_cardpack_max then
+        self.ability.choose = self.ability.extra
+    end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1"
+position = "after"
+payload = '''
+if (G.GAME.used_vouchers.v_riftraft_cardpack_choose or G.GAME.used_vouchers.v_riftraft_cardpack_max) and (not self.ability.choose or G.GAME.pack_choices < self.ability.choose) then
+    G.GAME.pack_choices = self.ability.choose or (G.GAME.pack_choices + 1)
+end
+'''
+match_indent = true
+# [[patches]]
+# [patches.pattern]
+# target = '=[SMODS _ "src/game_object.lua"]'
+# pattern = "return { vars = {card.ability.choose, card.ability.extra} }"
+# position = "before"
+# payload = '''
+# if G.GAME and G.GAME.used_vouchers then
+#     local choose, extra = card.ability.choose, card.ability.extra
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_card then
+#         extra = extra + 1
+#     end
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_choose then
+#         choose = choose + 1
+#     end
+#     return { vars = {choose, extra} }
+# end
+# '''
+# match_indent = true
+# [[patches]]
+# [patches.pattern]
+# target = '=[SMODS _ "src/game_object.lua"]'
+# pattern = "local cfg = (card and card.ability) or self.config"
+# position = "after"
+# payload = '''
+# if G.GAME and G.GAME.used_vouchers then
+#     local choose, extra = cfg.choose, cfg.extra
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_card then
+#         extra = extra + 1
+#     end
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_choose then
+#         choose = choose + 1
+#     end
+#     return {
+#         vars = { choose, extra },
+#         key = self.key:sub(1, -3),
+#     }
+# end
+# '''
+# match_indent = true
+
+# limit UI width to 5
+[[patches]]
+[patches.regex]
+target = 'functions/UI_definitions.lua'
+pattern = "^(?<indent>[\t ]*)(?<a>_size)\\*G.CARD_W(.*)"
+position = 'at'
+root_capture = 'a'
+payload = "math.min(_size, 5)"

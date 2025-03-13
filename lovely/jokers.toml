@@ -1,0 +1,167 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# allow always buying joke
+[[patches]]
+[patches.regex]
+target = 'functions/button_callbacks.lua'
+pattern = "(?<indent>[\t ]*)if e.config.ref_table.ability.set ~= 'Joker'(?<a> )or \\(e.config.ref_table.edition and e.config.ref_table.edition.negative\\) or #G.jokers.cards < G.jokers.config.card_limit then "
+position = 'at'
+root_capture = 'a'
+payload = " or e.config.ref_table.config.center.key == 'j_riftraft_joke' "
+[[patches]]
+[patches.regex]
+target = 'functions/button_callbacks.lua'
+pattern = "(?<indent>[\t ]*)not \\(card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit(?<a> )\\+ \\(\\(card.edition and card.edition.negative\\) and 1 or 0\\)\\) and"
+position = 'at'
+root_capture = 'a'
+payload = " + (card.config.center.key == 'j_riftraft_joke' and 1 or 0) "
+
+# prevent base card chips from scoring if you have Backwards
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "local chips = card:get_chip_bonus()"
+position = "after"
+payload = '''
+if (G.GAME.j_riftraft_backwards or 0) > 0 then
+    chips = 0
+end
+'''
+match_indent = true
+
+# prevent negative cards from being drawn when setting a card to negative after round end
+[[patches]]
+[patches.regex]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = "(?<indent>[\t ]*)if not is_in_pack(?<a> )then"
+position = 'at'
+root_capture = 'a'
+payload = " and G.GAME.blind.in_blind "
+
+# add current Abyss-copied joker to find_joker
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+pattern = "if v and type(v) == 'table' and v.ability.name == name and (non_debuff or not v.debuff) then"
+position = "before"
+times = 1
+payload = '''
+if v and type(v) == 'table' and v.config.center.key == "j_riftraft_abyss" and v.ability.copied_joker and G.P_CENTERS[v.ability.copied_joker].name == name and (non_debuff or not v.debuff) then
+    table.insert(jokers, v)
+end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+pattern = "if v and type(v) == 'table' and v.config.center.key == key and (count_debuffed or not v.debuff) then"
+position = "before"
+payload = '''
+if v and type(v) == 'table' and v.config.center.key == "j_riftraft_abyss" and v.ability.copied_joker == key and (count_debuffed or not v.debuff) then
+    table.insert(results, v)
+end
+'''
+match_indent = true
+
+# always trigger add to deck effects for Abyss-copied joker
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "function Card:add_to_deck(from_debuff)"
+position = "after"
+payload = '''
+    if self.config.center.key == "j_riftraft_abyss" and self.ability.copied_joker then
+        RIFTRAFT.call_abyss_joker(self, function()
+            self:add_to_deck(from_debuff)
+        end)
+        self.ability.added_copied_joker = true
+    end
+'''
+match_indent = true
+
+# prevent Riff-raff from over-creating jokers with Copy
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "for i = 1, jokers_to_create do"
+position = "after"
+payload = '''
+    if #G.jokers.cards >= G.jokers.config.card_limit then
+        break
+    end
+'''
+match_indent = true
+
+# get EventManager index for ease of use
+[[patches]]
+[patches.pattern]
+target = 'engine/event.lua'
+pattern = "while i <= #v do"
+position = "after"
+payload = "RIFTRAFT.e_manager_index = i"
+match_indent = true
+
+# add negative and duplicate win stickers to jokers
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = "delay(0.4); ease_ante(1); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})"
+position = "after"
+payload = '''
+if (G.GAME.round_resets.ante + 1) == 12 then
+    for k, v in pairs(G.jokers.cards) do
+        if v.config.center_key and v.ability.set == 'Joker' then
+            G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key = G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key or 0
+            if v.edition and v.edition.negative then
+                G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key = math.max(G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key, 1)
+            end
+            if G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key < 2 then
+                for kk, vv in pairs(G.jokers.cards) do
+                    if vv.config.center_key == v.config.center_key and vv ~= v then
+                        G.PROFILES[G.SETTINGS.profile].joker_usage[v.config.center_key].riftraft_win_key = 2
+                        break
+                    end
+                end
+            end
+        end
+    end
+end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "if self.ability.set == 'Joker' and not self.sticker_run then "
+position = "before"
+payload = '''
+if G.SETTINGS.run_stake_stickers then
+    local rift_sticker = RIFTRAFT.get_win_sticker(self.config.center)
+    if rift_sticker and not self.ability.riftraft_applied_sticker then
+        self.ability[rift_sticker] = true
+        self.ability.riftraft_applied_sticker = true
+    end
+elseif self.ability.riftraft_applied_sticker then
+    local rift_sticker = RIFTRAFT.get_win_sticker(self.config.center)
+    if rift_sticker and self.ability[rift_sticker] then
+        self.ability[rift_sticker] = nil
+        self.ability.riftraft_applied_sticker = nil
+    end
+end
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end"
+position = "after"
+payload = '''
+if cfg and cfg["riftraft_negative_clear"] then
+    info_queue[#info_queue+1] = {key = "riftraft_win_negative", set = "Other"}
+elseif cfg and cfg["riftraft_duplicate_clear"] then
+    info_queue[#info_queue+1] = {key = "riftraft_win_duplicate", set = "Other"}
+end
+'''
+match_indent = true

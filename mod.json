@@ -1,0 +1,14 @@
+{
+	"id": "RiftRaft",
+	"name": "Rift-Raft",
+	"author": ["vitellary"],
+	"description": "adding new ways to use negative cards",
+	"prefix": "riftraft",
+	"main_file": "src/RiftRaft.lua",
+	"priority": 115,
+	"dependencies": [
+		"Steamodded (>=1.*)",
+		"Lovely (>=0.7)"
+	],
+	"version": "1.0.0"
+}

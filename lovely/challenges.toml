@@ -1,0 +1,39 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# ban all tags except retrieval tag
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''
+(not v.min_ante or v.min_ante <= G.GAME.round_resets.ante) then
+    add = true
+end
+'''
+position = "after"
+payload = '''
+if (G.GAME.modifiers["riftraft_only_retrieval_tag"]) then
+    add = (v.key == 'tag_riftraft_voidpull')
+end
+'''
+match_indent = true
+
+# set up shop rates for only_void restriction
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''
+elseif v.id == 'no_shop_jokers' then 
+    self.GAME.joker_rate = 0
+'''
+position = "after"
+payload = '''
+elseif v.id == 'riftraft_only_void' then
+    self.GAME.joker_rate = 0
+    self.GAME.tarot_rate = 0
+    self.GAME.planet_rate = 0
+    self.GAME.modifiers[v.id] = true 
+'''
+match_indent = true

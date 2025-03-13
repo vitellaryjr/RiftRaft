@@ -1,0 +1,49 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 5
+
+# this file handles most consumeable/joker slot checks for Overflow
+
+# Base: #G\.jokers\.cards >= G\.jokers\.config\.card_limit
+# Generic: #G\.(\w+)\.cards < G\.\1\.config\.card_limit
+# Even More Generic: #(\S+)\.cards < \1\.config\.card_limit
+
+# Cards
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "(?<a>)#(?<area>[\\w\\d\\.]+)\\.cards < \\S+\\.config\\.card_limit"
+position = 'at'
+root_capture = 'a'
+payload = "RIFTRAFT.can_creation_overflow($area) or "
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "(?<a>)#(?<area>[\\w\\d\\.]+)\\.cards >= \\S+\\.config\\.card_limit"
+position = 'at'
+root_capture = 'a'
+payload = "not RIFTRAFT.can_creation_overflow($area) and "
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "(?<a>)(?<area>[\\w\\d\\.]+)\\.config\\.card_limit > #\\S+\\.cards"
+position = 'at'
+root_capture = 'a'
+payload = "RIFTRAFT.can_creation_overflow($area) or "
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "G\\.consumeables\\.config\\.card_limit - #G\\.consumeables\\.cards(?<a>)"
+position = 'at'
+root_capture = 'a'
+payload = " + (RIFTRAFT.can_creation_overflow(G.consumeables) and RIFTRAFT.overflow_buffer_size or 0)"
+
+# Tags
+[[patches]]
+[patches.regex]
+target = 'tag.lua'
+pattern = "(?<a>)#(?<area>[\\w\\d\\.]+)\\.cards < \\S+\\.config\\.card_limit"
+position = 'at'
+root_capture = 'a'
+payload = "RIFTRAFT.can_creation_overflow($area) or "

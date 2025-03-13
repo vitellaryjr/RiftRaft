@@ -1,0 +1,121 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# add the void UI and the void pack card area
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "self.consumeables = CardArea("
+position = "before"
+payload = '''
+self.riftraft_void = RIFTRAFT.VoidCardArea(
+    0, 0,
+    CAI.discard_W, CAI.discard_W, -- square
+    {card_limit = 500, type = 'void'})
+
+local limit = 5
+if SMODS.Mods["Cryptid"] then
+    limit = 1e20
+end
+self.riftraft_rifthand = RIFTRAFT.RiftHand(
+    0, 0,
+    CAI.hand_W,CAI.hand_H, 
+    {card_limit = self.GAME.starting_params.hand_size, highlight_limit = limit, type = 'rifthand'}
+)
+'''
+match_indent = true
+
+# set positions of void UI and void pack card area
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "G.hand:hard_set_VT()"
+position = "before"
+payload = '''
+G.riftraft_void.T.x = G.deck.T.x + 0.25 -- just kinda eyeballing it to line it up with the deck
+G.riftraft_void.T.y = G.deck.T.y - 2.5
+
+G.riftraft_rifthand.T.x = G.hand.T.x
+G.riftraft_rifthand.T.y = G.hand.T.y
+
+G.riftraft_void:hard_set_VT()
+G.riftraft_rifthand:hard_set_VT()
+'''
+match_indent = true
+
+# shuffle the void when opening up a void pack
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = 'G.GAME.pack_choices = self.config.center.config.choose or 1'
+position = "before"
+payload = '''
+if booster_obj and booster_obj.key:find('p_riftraft_voidpack') and G.riftraft_void then
+    G.riftraft_void:shuffle("voidpack_draw")
+end
+    
+'''
+match_indent = true
+
+# don't allow using consumables from the void hand
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = 'function Card:can_use_consumeable(any_state, skip_check)'
+position = "after"
+payload = '''
+    if self.area == G.riftraft_rifthand and not any_state then return false end
+'''
+match_indent = true
+
+# don't create a Use button for void hand consumeables
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = "(?<indent>[\t ]*)if self.highlighted and self.area and self.area.config.type ~= 'shop'(?<a> )then"
+position = 'at'
+root_capture = 'a'
+payload = " and self.area.config.type ~= 'rifthand' "
+
+# send void pack cards back into the void once the booster pack is done
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = 'G.FUNCS.draw_from_hand_to_deck()'
+position = "after"
+payload = '''
+if G.riftraft_rifthand then RIFTRAFT.draw_from_rift_to_void() end
+'''
+match_indent = true
+
+# right click deselects all in void
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+    G.hand:unhighlight_all()
+end
+'''
+position = "after"
+payload = '''
+if not G.SETTINGS.paused and G.riftraft_rifthand and G.riftraft_rifthand.highlighted[1] then 
+    if (self.locked) or 
+    (self.locks.frame) or
+    (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) then return end
+    G.riftraft_rifthand:unhighlight_all()
+end
+'''
+match_indent = true
+
+# cryptid fix: don't make the booster set the edition of contained cards for void packs
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "local edi = self.edition or {}"
+position = "after"
+payload = '''
+if self.config.center.kind == 'Rift' then edi = {} end -- don't include void packs
+'''
+match_indent = true
