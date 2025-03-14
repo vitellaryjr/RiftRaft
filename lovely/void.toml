@@ -36,6 +36,23 @@ position = "before"
 payload = '''
 G.riftraft_void.T.x = G.deck.T.x + 0.25 -- just kinda eyeballing it to line it up with the deck
 G.riftraft_void.T.y = G.deck.T.y - 2.5
+-- if we have betmma installed, move the void up above its UI
+if next(SMODS.find_mod('BetmmaAbilities')) or next(SMODS.find_mod('BetmmaSpells')) then
+    -- ... but if we ALSO have reverie, then it won't fit there either
+    -- so move it *down*, and we'll also move the deck UI when the void UI shows up
+    if next(SMODS.find_mod('Reverie')) then
+        G.riftraft_void.T.y = G.deck.T.y - 0.75
+        G.riftraft_void.move_deck = true
+        G.riftraft_void.orig_deck_t = {
+            x = G.deck.T.x,
+            y = G.deck.T.y,
+            w = G.deck.T.w,
+            h = G.deck.T.h,
+        }
+    else
+        G.riftraft_void.T.y = G.deck.T.y - 5
+    end
+end
 
 G.riftraft_rifthand.T.x = G.hand.T.x
 G.riftraft_rifthand.T.y = G.hand.T.y

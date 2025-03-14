@@ -58,8 +58,14 @@ function RIFTRAFT.VoidCardArea:update(dt)
     self.children.portal.T.r = self.children.portal.T.r - dt * 0.2
     if self:should_show() then
         self.T.x = self.orig_t.x
+        if self.move_deck then
+            G.deck.T.y = self.T.y + 2.25
+        end
     else
         self.T.x = G.discard.T.x
+        if self.move_deck then
+            G.deck.T.y = self.orig_deck_t.y
+        end
     end
     self.children.portal.T.x = self.T.x
 
