@@ -1259,7 +1259,7 @@ RIFTRAFT.RiftCard{
     cost = 1,
     in_pool = function(self, args)
         -- only appear in a pack if you have more than 1 card choice
-        if SMODS.OPENED_BOOSTER and G.GAME.pack_choices <= 1 then
+        if SMODS.OPENED_BOOSTER and ((not G.GAME.pack_choices) or G.GAME.pack_choices <= 1) then
             return false
         end
         -- also only appear if there's more cards than your hand can fit
