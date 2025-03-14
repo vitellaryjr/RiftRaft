@@ -1430,6 +1430,9 @@ if RIFTRAFT.negative_playing_cards then
         cost = 3,
         can_use = function(self, card)
             if (#G.hand.highlighted == 0) or (#G.hand.highlighted > card.ability.extra.select) then return false end
+            for k,v in ipairs(G.hand.highlighted) do
+                if v.edition then return false end
+            end
             return true
         end,
         use = function(self, card, area)

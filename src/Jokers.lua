@@ -728,8 +728,10 @@ if RIFTRAFT.negative_playing_cards then
                     delay = 0.5,
                     func = function()
                         for i,v in ipairs(G.hand.cards) do
-                            v:set_edition({negative = true}, true, i ~= 1)
-                            v:juice_up(0.3, 0.3)
+                            if not v.edition then
+                                v:set_edition({negative = true}, true, i ~= 1)
+                                v:juice_up(0.3, 0.3)
+                            end
                         end
                         return true
                     end,
@@ -764,7 +766,7 @@ if RIFTRAFT.negative_playing_cards then
             if context.after and context.cardarea == G.jokers and next(context.poker_hands[card.ability.extra.poker_hand]) and not context.blueprint then
                 local lowest
                 for i,v in ipairs(context.scoring_hand) do
-                    if not lowest or (SMODS.Ranks[v.base.value].id <= SMODS.Ranks[lowest.base.value].id) then
+                    if not lowest or ((SMODS.Ranks[v.base.value].id <= SMODS.Ranks[lowest.base.value].id) and not v.edition) then
                         lowest = v
                     end
                 end
@@ -772,8 +774,10 @@ if RIFTRAFT.negative_playing_cards then
                     trigger = 'before',
                     delay = 0.5,
                     func = function()
-                        lowest:set_edition({negative = true}, true)
-                        lowest:juice_up(0.3, 0.3)
+                        if lowest and not lowest.edition then
+                            lowest:set_edition({negative = true}, true)
+                            lowest:juice_up(0.3, 0.3)
+                        end
                         return true
                     end,
                 }))
