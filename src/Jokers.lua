@@ -117,7 +117,7 @@ SMODS.Joker{
         text = {
             "When {C:attention}Blind{} is selected, destroy",
             "all {C:dark_edition}Negative{} consumables and",
-            "replace them with a {C:riftraft_void}Rift{} card",
+            "create a {C:riftraft_void}Rift{} card",
             "{s:0.8,C:dark_edition}Negative {s:0.8,C:riftraft_void}Rift {s:0.8}cards excluded{}",
         },
     },
@@ -132,7 +132,7 @@ SMODS.Joker{
     cost = 6,
     blueprint_compat = false,
     calculate = function(self, card, context)
-        -- orig behavior
+        -- orig behavior: if played hand is a single negative card, destroy it and create a rift card
         -- if context.destroying_card and not context.blueprint then
         --     if #context.full_hand == 1 and context.full_hand[1].edition and context.full_hand[1].edition.negative then
         --         G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
@@ -174,9 +174,9 @@ SMODS.Joker{
                 trigger = 'immediate',
                 func = function()
                     if destroyed_any then
-                        local card = create_card('Rift',G.consumeables, nil, nil, nil, nil, nil, 'nsixth')
-                        card:add_to_deck()
-                        G.consumeables:emplace(card)
+                        local new_card = create_card('Rift',G.consumeables, nil, nil, nil, nil, nil, 'nsixth')
+                        new_card:add_to_deck()
+                        G.consumeables:emplace(new_card)
                     end
                     return true
                 end
