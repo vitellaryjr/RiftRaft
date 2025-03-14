@@ -301,15 +301,17 @@ SMODS.Joker{
     cost = 8,
     blueprint_compat = true,
     calculate = function(self, card, context)
-        if context.before then
-            card.ability.extra.keys = {}
-        end
         if context.other_consumeable then
-            if not card.ability.extra.keys[context.other_consumeable.config.center.key] then
-                card.ability.extra.keys[context.other_consumeable.config.center.key] = true
-                return {
-                    x_mult = card.ability.extra.xmult
-                }
+            for k,v in ipairs(G.consumeables.cards) do
+                if v.config.center.key == context.other_consumeable.config.center.key then
+                    if v == context.other_consumeable then
+                        return {
+                            x_mult = card.ability.extra.xmult
+                        }
+                    else
+                        break
+                    end
+                end
             end
         end
     end,
