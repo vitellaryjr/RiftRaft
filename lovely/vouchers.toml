@@ -127,7 +127,7 @@ target = 'functions/button_callbacks.lua'
 pattern = "for i = #G.shop_jokers.cards,1, -1 do"
 position = "before"
 payload = '''
-if G.GAME.used_vouchers.v_riftraft_booster_slut then
+if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
     for i = #G.shop_booster.cards, 1, -1 do
         local c = G.shop_booster:remove_card(G.shop_booster.cards[i])
         c:remove()
@@ -142,7 +142,7 @@ target = 'functions/button_callbacks.lua'
 pattern = "for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do"
 position = "before"
 payload = '''
-if G.GAME.used_vouchers.v_riftraft_booster_slut then
+if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
     local riftraft_orig_amount = G.GAME.modifiers.extra_boosters
     local spawn_void = nil
     local void_rate = RIFTRAFT.void_pack_rate
@@ -223,7 +223,7 @@ target = 'functions/common_events.lua'
 pattern = "if not skip_increment then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 1 end"
 position = "after"
 payload = '''
-if not skip_increment and G.GAME.used_vouchers.v_riftraft_booster_slut then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 2 end
+if not skip_increment and (G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters']) then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 2 end
 '''
 match_indent = true
 
