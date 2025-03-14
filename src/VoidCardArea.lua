@@ -80,9 +80,10 @@ function RIFTRAFT.VoidCardArea:update(dt)
 
     local was_active = self.send_active
     local was_shop = self.selecting_shop
+    local was_soul = self.selecting_soul
     self.send_active = self:can_send()
-    if was_shop ~= self.selecting_shop then
-        self:set_text_to_shop(self.selecting_shop)
+    if (was_shop ~= self.selecting_shop) or (was_soul ~= self.selecting_soul) then
+        self:update_text_state()
     end
     if was_active ~= self.send_active then
         self:set_text_active(self.send_active)
@@ -106,10 +107,14 @@ function RIFTRAFT.VoidCardArea:set_text_active(state)
     end
 end
 
-function RIFTRAFT.VoidCardArea:set_text_to_shop(state)
+function RIFTRAFT.VoidCardArea:update_text_state()
     self.children.text:remove_group()
     local text = {type = 'variable', key = "k_riftraft_send"}
-    if state then
+    local scale = 0.5
+    if self.selecting_soul then
+        text = {type = 'variable', key = "k_riftraft_nope"}
+        scale = 0.75
+    elseif self.selecting_shop then
         local cost = 0
         local shop_card = (G.shop_jokers and G.shop_jokers.highlighted and G.shop_jokers.highlighted[1])
                         or (G.shop_booster and G.shop_booster.highlighted and G.shop_booster.highlighted[1])
@@ -120,7 +125,7 @@ function RIFTRAFT.VoidCardArea:set_text_to_shop(state)
         end
         text = {type = 'variable', key = "k_riftraft_buy", vars = {cost}}
     end
-    self.text_node = simple_text_container(text, {scale = 0.5, colour = HEX("6b8286"), shadow = true})
+    self.text_node = simple_text_container(text, {scale = scale, colour = HEX("6b8286"), shadow = true})
     self.children.text:add_child({n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes = {self.text_node}})
     self.children.text:hard_set_VT()
 end
@@ -140,7 +145,9 @@ end
 
 function RIFTRAFT.VoidCardArea:can_send()
     self.selecting_shop = false
+    self.selecting_soul = false
     local send_card = nil
+    local cost = 0
     if (G.GAME.used_vouchers.v_riftraft_riftshop_send or RIFTRAFT.allow_buy_always) and G.STATE == G.STATES.SHOP then
         -- support all shop card areas in case some funny mods put valid cards in them
         send_card = (G.shop_jokers and G.shop_jokers.highlighted and G.shop_jokers.highlighted[1])
@@ -148,9 +155,8 @@ function RIFTRAFT.VoidCardArea:can_send()
                 or (G.shop_vouchers and G.shop_vouchers.highlighted and G.shop_vouchers.highlighted[1])
         if not send_card then return false end
         self.selecting_shop = true
-        local cost = send_card.cost
+        cost = send_card.cost
         if RIFTRAFT.allow_buy_always and not G.GAME.used_vouchers.v_riftraft_riftshop_send then cost = math.max(cost*2, 1) end
-        if (to_big(cost) > G.GAME.dollars - G.GAME.bankrupt_at) and (cost > 0) then return false end
     else
         if not (G.STATE == G.STATES.TAROT_PACK
         or G.STATE == G.STATES.SPECTRAL_PACK
@@ -169,11 +175,14 @@ function RIFTRAFT.VoidCardArea:can_send()
     and (not RIFTRAFT.negative_playing_cards or (send_card.config.center.set ~= 'Default' and send_card.config.center.set ~= 'Enhanced')) then
         self.selecting_shop = false; return false
     end
+    if send_card.config.center.key == "c_soul" or send_card.config.center.key == "c_black_hole" or send_card.config.center.soul_rate then
+        self.selecting_shop = false; self.selecting_soul = true; return false
+    end
     if send_card.config.center.set == 'Rift' then
         self.selecting_shop = false; return false
     end
-    if send_card.config.center.key == "c_soul" or send_card.config.center.key == "c_black_hole" or send_card.config.center.soul_rate then
-        self.selecting_shop = false; return false
+    if (cost > 0) and (to_big(cost) > G.GAME.dollars - G.GAME.bankrupt_at) and (cost > 0) then
+        return false
     end
     return true
 end

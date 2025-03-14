@@ -98,6 +98,7 @@ return {
         v_dictionary = {
             k_riftraft_buy = {"Buy ($#1#)", "& Send", "to Void"},
             k_riftraft_send = {"Send to", "Void"},
+            k_riftraft_nope = {"Nope!"},
         },
         v_text = {
             ch_c_riftraft_no_void = {
