@@ -314,19 +314,24 @@ SMODS.Joker{
         end
     end,
 }
+-- original behavior: +100 chips, +20 mult, and X2 mult if played hand contains all 3 editions
 SMODS.Joker{
     key = "trifecta",
     loc_txt = {
         name = "Trifecta",
         text = {
-            "{C:chips}+#1#{} Chips, {C:mult}+#2#{} Mult, and {X:mult,C:white} X#3# {} Mult",
-            "if played hand contains a scoring",
-            "{C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, and",
-            "{C:dark_edition}Polychrome{} card",
+            -- "{C:chips}+#1#{} Chips, {C:mult}+#2#{} Mult, and {X:mult,C:white} X#3# {} Mult",
+            -- "if played hand contains a scoring",
+            -- "{C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, and",
+            -- "{C:dark_edition}Polychrome{} card",
+
+            "{C:dark_edition}Foil{} cards give {C:mult}+#2#{} Mult and {X:mult,C:white} X#3# {} Mult",
+            "{C:dark_edition}Holographic{} cards give {C:chips}+#1#{} Chips and {X:mult,C:white} X#3# {} Mult",
+            "{C:dark_edition}Polychrome{} cards give {C:chips}+#1#{} Chips and {C:mult}+#2#{} Mult",
         },
     },
     config = {
-        extra = {chips = 100, mult = 20, xmult = 2},
+        extra = {chips = 25, mult = 5, xmult = 1.25},
     },
     loc_vars = function(self, info_queue, card)
         for _,v in ipairs({"foil", "holo", "polychrome"}) do
@@ -347,22 +352,48 @@ SMODS.Joker{
     cost = 8,
     blueprint_compat = true,
     calculate = function(self, card, context)
-        if context.joker_main and context.cardarea == G.jokers then
-            local has_edition = {}
-            for k,v in ipairs(context.scoring_hand) do
-                if v.edition then
-                    for kk,vv in pairs(v.edition) do
-                        if vv == true then
-                            has_edition[kk] = true
-                        end
-                    end
-                end
-            end
-            if has_edition.foil and has_edition.holo and has_edition.polychrome then
+        -- [[ orig behavior ]]
+        -- if context.joker_main and context.cardarea == G.jokers then
+        --     local has_edition = {}
+        --     for k,v in ipairs(context.scoring_hand) do
+        --         if v.edition then
+        --             for kk,vv in pairs(v.edition) do
+        --                 if vv == true then
+        --                     has_edition[kk] = true
+        --                 end
+        --             end
+        --         end
+        --     end
+        --     if has_edition.foil and has_edition.holo and has_edition.polychrome then
+        --         return {
+        --             chips = card.ability.extra.chips,
+        --             mult = card.ability.extra.mult,
+        --             x_mult = card.ability.extra.xmult,
+        --         }
+        --     end
+        -- end
+
+        local played = nil
+        if context.individual and context.cardarea == G.play and context.other_card and context.other_card.edition then
+            played = context.other_card
+        elseif context.other_joker and context.other_joker.edition then
+            played = context.other_joker
+        end
+        if played ~= nil then
+            if played.edition.foil then
+                return {
+                    mult = card.ability.extra.mult,
+                    x_mult = card.ability.extra.xmult,
+                }
+            elseif played.edition.holo then
+                return {
+                    chips = card.ability.extra.chips,
+                    x_mult = card.ability.extra.xmult,
+                }
+            elseif played.edition.polychrome then
                 return {
                     chips = card.ability.extra.chips,
                     mult = card.ability.extra.mult,
-                    x_mult = card.ability.extra.xmult,
                 }
             end
         end
