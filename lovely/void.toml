@@ -16,7 +16,7 @@ self.riftraft_void = RIFTRAFT.VoidCardArea(
     {card_limit = 500, type = 'void'})
 
 local limit = 5
-if SMODS.Mods["Cryptid"] then
+if next(SMODS.find_mod('Cryptid')) then
     limit = 1e20
 end
 self.riftraft_rifthand = RIFTRAFT.RiftHand(

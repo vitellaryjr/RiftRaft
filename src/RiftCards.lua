@@ -690,7 +690,7 @@ RIFTRAFT.RiftCard{
         end
     end,
 }
-if SMODS.Mods['Cryptid'] then
+if next(SMODS.find_mod('Cryptid')) then
     RIFTRAFT.RiftCard{
         key = "null",
         loc_txt = {
@@ -862,7 +862,7 @@ RIFTRAFT.RiftCard{
     end,
 }
 local joker_tags = {'tag_foil','tag_holo','tag_polychrome','tag_negative','tag_top_up','tag_uncommon','tag_rare'}
-if SMODS.Mods["Cryptid"] then
+if next(SMODS.find_mod('Cryptid')) then
     -- wow cryptid adds a lot of these
     for _,v in ipairs{
         'tag_cry_epic', 'tag_cry_schematic', 'tag_cry_glitched', 'tag_cry_oversat', 'tag_cry_mosaic', 'tag_cry_gold', 'tag_cry_glass', 'tag_cry_blur',

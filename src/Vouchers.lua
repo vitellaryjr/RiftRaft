@@ -167,7 +167,7 @@ SMODS.Voucher{
 }
 
 -- tier 3s
-if SMODS.Mods["Cryptid"] then
+if next(SMODS.find_mod('Cryptid')) then
     SMODS.Voucher{
         key = "negative_curate",
         loc_txt = {

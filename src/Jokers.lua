@@ -902,7 +902,7 @@ SMODS.Joker{
     end,
 }
 
-if SMODS.Mods["Cryptid"] then
+if next(SMODS.find_mod('Cryptid')) then
     local said_erased = false
     local function destroy_negative(card, flower)
         G.E_MANAGER:add_event(Event({
