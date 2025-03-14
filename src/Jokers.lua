@@ -174,7 +174,8 @@ SMODS.Joker{
                 trigger = 'immediate',
                 func = function()
                     if destroyed_any then
-                        local new_card = create_card('Rift',G.consumeables, nil, nil, nil, nil, nil, 'nsixth')
+                        -- local new_card = create_card('Rift',G.consumeables, nil, nil, nil, nil, nil, 'nsixth')
+                        local new_card = SMODS.create_card{set = 'Rift', area = G.consumeables, key_append = 'nsixth'}
                         new_card:add_to_deck()
                         G.consumeables:emplace(new_card)
                     end

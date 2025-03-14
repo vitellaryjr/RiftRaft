@@ -129,7 +129,8 @@ for i,v in ipairs(booster_types) do
             colour = HEX("526469"),
             loc_key = "k_plus_riftraft_rift",
             create = function()
-                local v = create_card("Rift", G.consumeables, nil, nil, nil, nil, nil, "diha")
+                -- local v = create_card("Rift", G.consumeables, nil, nil, nil, nil, nil, "diha")
+                local v = SMODS.create_card{set = 'Rift', area = G.consumeables, key_append = 'diha'}
                 v:set_edition({negative = true}, true, true)
                 v:add_to_deck()
                 G.consumeables:emplace(v)

@@ -551,7 +551,8 @@ RIFTRAFT.RiftCard{
         for i=1, card.ability.extra.amount do
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                 play_sound('timpani')
-                local new_card = create_card('Tarot', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'loss')
+                -- local new_card = create_card('Tarot', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'loss')
+                local new_card = SMODS.create_card{set = 'Tarot', area = G.riftraft_rifthand, key_append = 'loss', discover = true}
                 new_card:set_edition({negative = true}, true, true)
                 G.riftraft_rifthand:emplace(new_card)
                 card:juice_up(0.3, 0.5)
@@ -617,7 +618,8 @@ RIFTRAFT.RiftCard{
         for i=1, card.ability.extra.amount do
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                 play_sound('timpani')
-                local new_card = create_card("Planet", G.riftraft_rifthand, nil, nil, true, true, _planet, 'crater')
+                -- local new_card = create_card("Planet", G.riftraft_rifthand, nil, nil, true, true, _planet, 'crater')
+                local new_card = SMODS.create_card{set = 'Planet', area = G.riftraft_rifthand, key = _planet, key_append = 'crater', discover = true}
                 new_card:set_edition({negative = true}, true, true)
                 G.riftraft_rifthand:emplace(new_card)
                 card:juice_up(0.3, 0.5)
@@ -668,7 +670,8 @@ RIFTRAFT.RiftCard{
         for i=1, card.ability.extra.amount do
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                 play_sound('timpani')
-                local new_card = create_card('Spectral', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'banish')
+                -- local new_card = create_card('Spectral', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'banish')
+                local new_card = SMODS.create_card{set = 'Spectral', area = G.riftraft_rifthand, key_append = 'banish', discover = true}
                 new_card:set_edition({negative = true}, true, true)
                 G.riftraft_rifthand:emplace(new_card)
                 card:juice_up(0.3, 0.5)
@@ -720,7 +723,8 @@ if next(SMODS.find_mod('Cryptid')) then
             for i=1, card.ability.extra.amount do
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                     play_sound('timpani')
-                    local new_card = create_card('Code', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'null')
+                    -- local new_card = create_card('Code', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'null')
+                    local new_card = SMODS.create_card{set = 'Code', area = G.riftraft_rifthand, key_append = 'null', discover = true}
                     new_card:set_edition({negative = true}, true, true)
                     G.riftraft_rifthand:emplace(new_card)
                     card:juice_up(0.3, 0.5)
@@ -772,7 +776,8 @@ RIFTRAFT.RiftCard{
         for i=1, card.ability.extra.amount do
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                 play_sound('timpani')
-                local new_card = create_card('Joker', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'sol')
+                -- local new_card = create_card('Joker', G.riftraft_rifthand, nil, nil, nil, nil, nil, 'sol')
+                local new_card = SMODS.create_card{set = 'Joker', area = G.riftraft_rifthand, key_append = 'sol', discover = true}
                 new_card:set_edition({negative = true}, true, true)
                 G.riftraft_rifthand:emplace(new_card)
                 card:juice_up(0.3, 0.5)
@@ -1122,7 +1127,8 @@ RIFTRAFT.RiftCard{
         end}))
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
-            local new_card = create_card('Joker', G.riftraft_rifthand, nil, 0.99, nil, nil, nil, 'obl')
+            -- local new_card = create_card('Joker', G.riftraft_rifthand, nil, 0.99, nil, nil, nil, 'obl')
+            local new_card = SMODS.create_card{set = 'Joker', area = G.riftraft_rifthand, rarity = 0.99, key_append = 'obl', discover = true}
             new_card:set_edition({negative = true}, true, true)
             G.riftraft_rifthand:emplace(new_card)
             card:juice_up(0.3, 0.5)
@@ -1369,7 +1375,8 @@ RIFTRAFT.RiftCard{
     use = function(self, card, area)
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
-            local new_card = create_card('Rift', G.consumeables, nil, nil, nil, nil, G.GAME.riftraft_last_rift, 'echo')
+            -- local new_card = create_card('Rift', G.consumeables, nil, nil, nil, nil, G.GAME.riftraft_last_rift, 'echo')
+            local new_card = SMODS.create_card{set = 'Rift', area = G.consumeables, key = G.GAME.riftraft_last_rift, key_append = 'echo'}
             new_card:add_to_deck()
             G.consumeables:emplace(new_card)
             card:juice_up(0.3, 0.5)
@@ -1660,7 +1667,8 @@ SMODS.Seal{
 RIFTRAFT.check_destroy_for_seal = function(card)
     if card.seal == "riftraft_rift" then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-            local new_card = create_card('Rift', G.consumeables)
+            -- local new_card = create_card('Rift', G.consumeables)
+            local new_card = SMODS.create_card{set = 'Rift', area = G.consumeables}
             new_card:add_to_deck()
             G.consumeables:emplace(new_card)
             return true
