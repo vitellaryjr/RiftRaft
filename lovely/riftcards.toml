@@ -71,9 +71,10 @@ if card.config.center.set == 'Rift' then
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
                 func = function()
-                G.GAME.riftraft_last_rift = card.config.center_key
-                return true
-            end}))
+                    G.GAME.riftraft_last_rift = card.config.center.key
+                    return true
+                end
+            }))
             return true
         end
     }))
