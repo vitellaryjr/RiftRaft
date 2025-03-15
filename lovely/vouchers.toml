@@ -13,13 +13,28 @@ priority = 1
 # payload = "(self.ability.name == 'Antimatter' or self.config.center_key == 'v_riftraft_negative_hone' or self.config.center_key == 'v_riftraft_negative_consume')"
 
 # prevent Negation and Vastness from rendering with the voucher shader
+# [[patches]]
+# [patches.regex]
+# target = 'card.lua'
+# pattern = "(?<indent>[\t ]*)if \\(self.ability.set == 'Voucher' or self.config.center.demo\\) and \\((?<a>self.ability.name ~= 'Antimatter') or not \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
+# position = 'at'
+# root_capture = 'a'
+# payload = "(self.ability.name ~= 'Antimatter' and self.config.center_key ~= 'v_riftraft_negative_hone' and self.config.center_key ~= 'v_riftraft_negative_consume')"
+
+# prevent Negation and Vastness from having a +1 Joker Slot badge
 [[patches]]
-[patches.regex]
-target = 'card.lua'
-pattern = "(?<indent>[\t ]*)if \\(self.ability.set == 'Voucher' or self.config.center.demo\\) and \\((?<a>self.ability.name ~= 'Antimatter') or not \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
-position = 'at'
-root_capture = 'a'
-payload = "(self.ability.name ~= 'Antimatter' and self.config.center_key ~= 'v_riftraft_negative_hone' and self.config.center_key ~= 'v_riftraft_negative_consume')"
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+if self.edition.type == 'negative' and self.ability.consumeable then
+    badges[#badges + 1] = 'negative_consumable'
+'''
+position = "after"
+payload = '''
+elseif self.edition.type == 'negative' and self.ability.set == 'Voucher' and (self.config.center.key:sub(1,19) == 'v_riftraft_negative') then
+    -- don't do anything
+'''
+match_indent = true
 
 # increase negative odds if Negation is purchased
 # [[patches]]
