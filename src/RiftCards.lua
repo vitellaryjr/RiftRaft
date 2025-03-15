@@ -1522,6 +1522,7 @@ SMODS.Spectral{
     pos = {x = 7, y = 1},
     cost = 3,
     can_use = function(self, card)
+        if (#G.riftraft_void.cards + #G.riftraft_rifthand.cards) <= 0 then return false end
         for k,v in ipairs(G.riftraft_void.cards) do
             if v.config.center.key ~= 'c_riftraft_echo' then return true end
         end
@@ -1540,6 +1541,7 @@ SMODS.Spectral{
         pseudoshuffle(temp_hand, pseudoseed('echo'))
         for i=1,card.ability.extra.select do
             local v = temp_hand[i]
+            if not v then break end
             for j=1,card.ability.extra.amount do
                 local new_card = copy_card(v)
                 new_card:add_to_deck()
