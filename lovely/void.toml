@@ -117,6 +117,22 @@ if G.riftraft_rifthand then RIFTRAFT.draw_from_rift_to_void() end
 '''
 match_indent = true
 
+# end booster pack if you use the last card available
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.GAME.pack_choices = G.GAME.pack_choices - 1"
+position = "after"
+payload = '''
+if #G.pack_cards.cards == 0 then
+    G.CONTROLLER.interrupt.focus = true
+    if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Arcana') then inc_career_stat('c_tarot_reading_used', 1) end
+    if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Celestial') then inc_career_stat('c_planetarium_used', 1) end
+    G.FUNCS.end_consumeable(nil, delay_fac)
+end
+'''
+match_indent = true
+
 # right click deselects all in void
 [[patches]]
 [patches.pattern]
