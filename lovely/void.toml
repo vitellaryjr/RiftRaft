@@ -106,6 +106,16 @@ payload = '''
 if G.riftraft_rifthand then RIFTRAFT.draw_from_rift_to_void() end
 '''
 match_indent = true
+# same but for cryptid's draw_from_hand_to_run
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = 'G.FUNCS.draw_from_hand_to_run()'
+position = "after"
+payload = '''
+if G.riftraft_rifthand then RIFTRAFT.draw_from_rift_to_void() end
+'''
+match_indent = true
 
 # right click deselects all in void
 [[patches]]
