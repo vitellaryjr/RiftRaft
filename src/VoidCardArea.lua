@@ -313,7 +313,8 @@ end
 
 function RIFTRAFT.VoidCardArea:align_cards()
     for k, card in ipairs(self.cards) do
-        if card.facing == 'front' then card:flip() end
+        -- don't flip cine cards, that can activate them or break their progress
+        if card.facing == 'front' and (not card.config or card.config.center.set ~= 'Cine') then card:flip() end
 
         if not card.states.drag.is then 
             card.T.x = self.T.x + (self.T.w - card.T.w)*card.discard_pos.x
