@@ -45,6 +45,12 @@ SMODS.Atlas{
     px = 71,
     py = 95
 }
+SMODS.Atlas({
+    key = "modicon",
+    path = "mod_icon.png",
+    px = 34,
+    py = 34
+  })
 
 local mod = SMODS.current_mod
 local config = mod.config
