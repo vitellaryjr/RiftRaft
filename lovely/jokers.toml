@@ -101,7 +101,9 @@ match_indent = true
 target = 'engine/event.lua'
 pattern = "while i <= #v do"
 position = "after"
-payload = "RIFTRAFT.e_manager_index = i"
+payload = '''
+if RIFTRAFT then RIFTRAFT.e_manager_index = i end
+'''
 match_indent = true
 
 # add negative and duplicate win stickers to jokers
