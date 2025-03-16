@@ -217,6 +217,7 @@ function RIFTRAFT.VoidCardArea:click()
         if self.selecting_shop then
             local to_send = G.shop_jokers.highlighted[1] or G.shop_booster.highlighted[1] or G.shop_vouchers.highlighted[1]
             draw_card(to_send.area, self, 1, 'up', false, to_send)
+            to_send.ability.riftraft_from_void = true
 
             -- do the buying before we set it to negative, otherwise you lose a lot more money!
             SMODS.calculate_context({buying_card = true, card = to_send})
@@ -252,6 +253,7 @@ function RIFTRAFT.VoidCardArea:click()
         else
             local to_send = G.pack_cards.highlighted[1]
             draw_card(G.pack_cards, self, 1, 'up', false, to_send)
+            to_send.ability.riftraft_from_void = true
             G.pack_cards:change_size(-1)
             -- G.pack_cards.T.w = G.pack_cards.config.card_limit * G.CARD_W
             to_send:set_edition({negative = true}, true, true)
