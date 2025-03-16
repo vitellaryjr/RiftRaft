@@ -1621,14 +1621,14 @@ SMODS.Spectral{
             end
             table.insert(copied, new_card)
         end
-        for i,v in ipairs(G.riftraft_rifthand.cards) do
+        for i,v in pairs(G.riftraft_rifthand.cards) do
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                 void_copy(v)
                 return true
             end}))
         end
         -- also copies cards from void. nerfed it to not do this after some playtesting
-        -- for i,v in ipairs(G.riftraft_void.cards) do
+        -- for i,v in pairs(G.riftraft_void.cards) do
         --     G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
         --         void_copy(v)
         --         return true
