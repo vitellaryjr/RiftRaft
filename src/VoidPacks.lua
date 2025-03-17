@@ -46,9 +46,13 @@ for i,v in ipairs(booster_types) do
                 if has.playing_card and not G.GAME.banned_keys["c_riftraft_cipher"] then
                     table.insert(forced_keys, "c_riftraft_cipher")
                 end
-                if has.joker and not G.GAME.banned_keys["c_riftraft_facade"] then
-                    table.insert(forced_keys, "c_riftraft_facade")
-                    table.insert(forced_keys, "c_riftraft_static")
+                if has.joker then
+                    if not G.GAME.banned_keys["c_riftraft_facade"] then
+                        table.insert(forced_keys, "c_riftraft_facade")
+                    end
+                    if not G.GAME.banned_keys["c_riftraft_static"] then
+                        table.insert(forced_keys, "c_riftraft_static")
+                    end
                 end
                 if #forced_keys > 0 then
                     data.key = forced_keys[pseudorandom(pseudoseed('voidpack_firstcard'), 1, #forced_keys)]
