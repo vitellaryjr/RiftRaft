@@ -339,14 +339,32 @@ RIFTRAFT.RiftCard{
     end,
     use = function(self, card, area)
         local added = {}
-        for i,v in ipairs(G.riftraft_rifthand.highlighted) do
-            -- we check again to make sure usage is still valid after other cards have been used
-            if v:can_use_consumeable(true) then
+        -- for i,v in ipairs(G.riftraft_rifthand.highlighted) do
+        --     -- we check again to make sure usage is still valid after other cards have been used
+        --     if v:can_use_consumeable(true, true) then
+        --         v:use_consumeable(v.area)
+        --         SMODS.calculate_context({using_consumeable = true, consumeable = card, area = card.from_area})
+        --         table.insert(added, v)
+        --     end
+        -- end
+        
+        -- okayy this is harder than i thought
+        -- we have to recursively loop through the table to make sure we check can_use after the previous consumable's events have been queued
+        local function use_card(i)
+            local v = G.riftraft_rifthand.highlighted[i]
+            if not v then return end
+            if v:can_use_consumeable(true, true) then
                 v:use_consumeable(v.area)
                 SMODS.calculate_context({using_consumeable = true, consumeable = card, area = card.from_area})
                 table.insert(added, v)
             end
+            G.E_MANAGER:add_event(Event({trigger = 'immediate', func = function()
+                use_card(i + 1)
+                return true
+            end}))
         end
+        use_card(1)
+
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
             for i,v in ipairs(added) do
                 v:start_dissolve(nil, i > 1)
