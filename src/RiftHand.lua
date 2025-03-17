@@ -26,7 +26,7 @@ function RIFTRAFT.RiftHand:align_cards()
             card.T.x = self.T.x + (self.T.w-self.card_w)*((k-1)/math.max(max_cards-1, 1) - 0.5*(#self.cards-max_cards)/math.max(max_cards-1, 1)) + 0.5*(self.card_w - card.T.w)
             local highlight_height = G.HIGHLIGHT_H
             if not card.highlighted then highlight_height = 0 end
-            card.T.y = self.T.y - 1.8*card.T.h - highlight_height + (G.SETTINGS.reduced_motion and 0 or 1)*0.1*math.sin(0.666*G.TIMERS.REAL+card.T.x) + math.abs(1.3*(-#self.cards/2 + k-0.5)/(#self.cards))^2-0.3
+            card.T.y = self.T.y - 1.8*G.CARD_H + (G.CARD_H - card.T.h)/2 - highlight_height + (G.SETTINGS.reduced_motion and 0 or 1)*0.1*math.sin(0.666*G.TIMERS.REAL+card.T.x) + math.abs(1.3*(-#self.cards/2 + k-0.5)/(#self.cards))^2-0.3
             card.T.x = card.T.x + card.shadow_parrallax.x/30
             card.T.scale = 1
         end
