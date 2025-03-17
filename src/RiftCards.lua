@@ -340,9 +340,12 @@ RIFTRAFT.RiftCard{
     use = function(self, card, area)
         local added = {}
         for i,v in ipairs(G.riftraft_rifthand.highlighted) do
-            v:use_consumeable(v.area)
-            SMODS.calculate_context({using_consumeable = true, consumeable = card, area = card.from_area})
-            table.insert(added, v)
+            -- we check again to make sure usage is still valid after other cards have been used
+            if v:can_use_consumeable(true) then
+                v:use_consumeable(v.area)
+                SMODS.calculate_context({using_consumeable = true, consumeable = card, area = card.from_area})
+                table.insert(added, v)
+            end
         end
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
             for i,v in ipairs(added) do
