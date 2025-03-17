@@ -143,8 +143,11 @@ for i,v in ipairs(booster_types) do
     }
 end
 
+RIFTRAFT.rifthand_active = false
+
 RIFTRAFT.draw_from_void_to_rift = function()
     G.riftraft_rifthand.config.card_limit = G.hand.config.card_limit
+    RIFTRAFT.rifthand_active = true
     -- i don't remember what this was supposed to be doing?
     -- G.riftraft_void:has_card_types_in(G.riftraft_rifthand.config.card_limit)
     delay(0.3)
@@ -158,6 +161,7 @@ RIFTRAFT.draw_from_rift_to_void = function()
     for i=1, hand_count do
         draw_card(G.riftraft_rifthand, G.riftraft_void, i*100/hand_count,'down', nil, nil, 0.08)
     end
+    RIFTRAFT.rifthand_active = false
 end
 
 -- make the packs appear negative in the collection

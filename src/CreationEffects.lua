@@ -119,7 +119,7 @@ function CardArea:emplace(card, location, stay_flipped, ...)
 				local draw_event = Event({
 					blockable = false,
 					func = function()
-						if RIFTRAFT.in_void_pack() then
+						if RIFTRAFT.in_void_pack() and RIFTRAFT.rifthand_active then
 							draw_card(card.area, G.riftraft_rifthand, nil, 'up', nil, card, 0.08)
 						else
 							draw_card(card.area, G.riftraft_void, nil, 'down', nil, card, 0.08)
