@@ -83,16 +83,16 @@ SMODS.Joker{
         name = "Receipt",
         text = {
             "Gains {X:mult,C:white} X#1# {} Mult for every",
-            "{C:dark_edition}Negative{} Joker sold",
-            "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+            "{C:attention}#3#{} {C:dark_edition}Negative{} Jokers sold",
+            "{C:inactive}(Currently {C:attention}#4#{C:inactive}/#3# and {X:mult,C:white} X#2# {C:inactive} Mult)"
         },
     },
     config = {
-        extra = {xmult = 1, xmult_gain = 0.25},
+        extra = {xmult = 1, xmult_gain = 0.99, rounds = 3, current = 0},
     },
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = "e_negative", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
-        return {vars = {card.ability.extra.xmult_gain, card.ability.extra.xmult}}
+        return {vars = {card.ability.extra.xmult_gain, card.ability.extra.xmult, card.ability.extra.rounds, card.ability.extra.current}}
     end,
     atlas = "RiftJokers",
     pos = {x = 3, y = 1},
@@ -101,9 +101,15 @@ SMODS.Joker{
     blueprint_compat = true,
     calculate = function(self, card, context)
         if context.selling_card and context.cardarea == G.jokers and not context.blueprint then
-            if context.card.edition and context.card.edition.negative then
-                card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
-                return {message = "X"..card.ability.extra.xmult_gain.." Mult"}
+            if context.card.ability.set == 'Joker' and context.card.edition and context.card.edition.negative then
+                card.ability.extra.current = card.ability.extra.current + 1
+                if card.ability.extra.current >= card.ability.extra.rounds then
+                    card.ability.extra.current = 0
+                    card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
+                    return {message = "X"..card.ability.extra.xmult.." Mult"}
+                else
+                    return {message = card.ability.extra.current.."/"..card.ability.extra.rounds}
+                end
             end
         elseif context.joker_main and context.cardarea == G.jokers then
             return {x_mult = card.ability.extra.xmult}
