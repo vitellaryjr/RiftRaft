@@ -60,18 +60,18 @@ match_indent = true
 # define last used rift card
 [[patches]]
 [patches.pattern]
-target = "functions/misc_functions.lua"
-pattern = "if card.config.center.set == 'Tarot' or card.config.center.set == 'Planet' then "
-position = "before"
+target = "card.lua"
+pattern = "if not copier then set_consumeable_usage(self) end"
+position = "after"
 payload = '''
-if card.config.center.set == 'Rift' then
+if self.config.center.set == 'Rift' then
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
         func = function()
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
                 func = function()
-                    G.GAME.riftraft_last_rift = card.config.center.key
+                    G.GAME.riftraft_last_rift = self.config.center.key
                     return true
                 end
             }))
