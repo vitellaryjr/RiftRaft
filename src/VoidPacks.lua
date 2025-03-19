@@ -146,7 +146,7 @@ end
 RIFTRAFT.rifthand_active = false
 
 RIFTRAFT.draw_from_void_to_rift = function()
-    G.riftraft_rifthand.config.card_limit = G.hand.config.card_limit
+    G.riftraft_rifthand.config.card_limit = math.min(math.max(#G.riftraft_void.cards, 8), G.hand.config.card_limit)
     RIFTRAFT.rifthand_active = true
     -- i don't remember what this was supposed to be doing?
     -- G.riftraft_void:has_card_types_in(G.riftraft_rifthand.config.card_limit)
