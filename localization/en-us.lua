@@ -46,6 +46,12 @@ return {
                     "{C:attention}one{} of this Joker",
                 },
             },
+            riftraft_paleflower_remove = {
+                name="n",
+                text={
+                    "{C:inactive,s:0.8}(Owned {C:dark_edition,s:0.8}Negative{C:inactive,s:0.8} cards are destroyed at end of shop)",
+                },
+            },
         },
         Mod = {
             RiftRaft = {

@@ -922,6 +922,7 @@ if next(SMODS.find_mod('Cryptid')) then
             func = function()
                 card:start_dissolve({G.C.WHITE, HEX("cdedf4"), HEX("a9d0d9")})
                 G.jokers.config.card_limit = G.jokers.config.card_limit + flower.ability.extra.slots
+                G.consumeables.config.card_limit = G.consumeables.config.card_limit + flower.ability.extra.slots
                 if card.area == G.hand then
                     SMODS.calculate_context({remove_playing_cards = true, removed = {card}})
                 end
@@ -949,15 +950,39 @@ if next(SMODS.find_mod('Cryptid')) then
             text = {
                 "If a {C:dark_edition}Negative{} card or booster pack",
                 "appears, {C:attention}destroy{} it and {C:attention}permanently{}",
-                "gain {C:dark_edition}+#1# {C:attention}Joker{} slots",
-                "Fills empty {C:attention}Joker{} slots with {C:attention}copies{}",
-                "of owned {C:attention}Jokers{} at start of round",
-                "{s:0.8,C:inactive}Will not copy Me'hon, cannot become Negative{}"
+                "gain {C:dark_edition}+#1# {C:attention}Joker{} and {C:attention}Consumable{} slots",
+                "Fills all empty slots with {C:attention}copies{}",
+                "of owned cards at start of round",
+                "{s:0.8,C:inactive}Will not copy Me'hon, cannot become Negative{}",
             },
         },
-        config = {extra = {slots = 2}},
+        config = {extra = {slots = 1}},
         loc_vars = function(self, info_queue, card)
             return {vars = {card.ability.extra.slots, card.ability.extra.emult}}
+        end,
+        generate_ui = function(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
+            SMODS.Center.generate_ui(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
+            if not G.jokers then return end
+            local found_negative = false
+            for k,v in ipairs(G.jokers.cards) do
+                if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
+                    found_negative = true
+                    break
+                end
+            end
+            if not found_negative and G.consumeables then
+                for k,v in ipairs(G.consumeables.cards) do
+                    if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
+                        found_negative = true
+                        break
+                    end
+                end
+            end
+            if found_negative then
+                local new_nodes = {}
+                localize{type = 'other', key = 'riftraft_paleflower_remove', nodes = new_nodes, vars = {}}
+                desc_nodes[#desc_nodes+1] = new_nodes[1]
+            end
         end,
         atlas = "RiftJokers",
         pos = {x = 0, y = 3},
@@ -966,20 +991,33 @@ if next(SMODS.find_mod('Cryptid')) then
 	    cost = 50,
         blueprint_compat = false,
         add_to_deck = function(self, card, from_debuff)
-            for k,v in ipairs(G.jokers.cards) do
-                if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
-                    destroy_negative(v, card)
-                end
-            end
-            for k,v in ipairs(G.consumeables.cards) do
-                if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
-                    destroy_negative(v, card)
-                end
-            end
+            -- for k,v in ipairs(G.jokers.cards) do
+            --     if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
+            --         destroy_negative(v, card)
+            --     end
+            -- end
+            -- for k,v in ipairs(G.consumeables.cards) do
+            --     if v.edition and v.edition.negative and (not v.ability or not v.ability.eternal) then
+            --         destroy_negative(v, card)
+            --     end
+            -- end
         end,
         calculate = function(self, card, context)
+            if context.ending_shop and context.cardarea == G.jokers and not context.repetition and not context.blueprint then
+                for k,v in ipairs(G.jokers.cards) do
+                    if v.edition and v.edition.negative and not (v.ability and v.ability.eternal) then
+                        destroy_negative(v, card)
+                    end
+                end
+                for k,v in ipairs(G.consumeables.cards) do
+                    if v.edition and v.edition.negative and not (v.ability and v.ability.eternal) then
+                        destroy_negative(v, card)
+                    end
+                end
+            end
             if context.setting_blind and context.cardarea == G.jokers and not context.repetition and not context.blueprint then
                 local copy_pool, copy_i = nil, nil
+                local copied = false
                 for i=1,(G.jokers.config.card_limit - #G.jokers.cards) do
                     if not copy_pool then
                         copy_pool = {}
@@ -990,10 +1028,11 @@ if next(SMODS.find_mod('Cryptid')) then
                             end
                         end
                         if #copy_pool == 0 then break end
-                        pseudoshuffle(copy_pool, pseudoseed('paleflower'))
+                        pseudoshuffle(copy_pool, pseudoseed('paleflower_j'))
                     end
                     local to_copy = copy_pool[copy_i]
                     if to_copy then
+                        copied = true
                         G.E_MANAGER:add_event(Event({
                             func = function()
                                 local new_card = copy_card(to_copy)
@@ -1006,6 +1045,36 @@ if next(SMODS.find_mod('Cryptid')) then
                     copy_i = copy_i + 1
                     if copy_i > #copy_pool then copy_pool = nil end
                 end
+                copy_pool, copy_i = nil, nil
+                for i=1,(G.consumeables.config.card_limit - #G.consumeables.cards) do
+                    if not copy_pool then
+                        copy_pool = {}
+                        copy_i = 1
+                        for k,v in ipairs(G.consumeables.cards) do
+                            copy_pool[#copy_pool+1] = v
+                        end
+                        if #copy_pool == 0 then break end
+                        pseudoshuffle(copy_pool, pseudoseed('paleflower_c'))
+                    end
+                    local to_copy = copy_pool[copy_i]
+                    if to_copy then
+                        copied = true
+                        G.E_MANAGER:add_event(Event({
+                            func = function()
+                                local new_card = copy_card(to_copy)
+                                new_card:add_to_deck()
+                                G.consumeables:emplace(new_card)
+                                return true
+                            end,
+                        }))
+                    end
+                    copy_i = copy_i + 1
+                    if copy_i > #copy_pool then copy_pool = nil end
+                end
+                if copied then
+                    return {message = localize("k_duplicated_ex")}
+                end
+
                 -- orig behavior: ^1.1 mult for each empty joker slot
                 -- return {
                 --     func = function()
