@@ -942,7 +942,7 @@ RIFTRAFT.RiftCard{
         local tag_pool = {}
         for k,key in ipairs(joker_tags) do
             local v = G.P_TAGS[key]
-            if not G.GAME.banned_keys[key] and (not v.requires or (G.P_CENTERS[v.requires] and G.P_CENTERS[v.requires].discovered)) and 
+            if v ~= nil and not G.GAME.banned_keys[key] and (not v.requires or (G.P_CENTERS[v.requires] and G.P_CENTERS[v.requires].discovered)) and 
             (not v.min_ante or v.min_ante <= G.GAME.round_resets.ante) then
                 table.insert(tag_pool, key)
             end
