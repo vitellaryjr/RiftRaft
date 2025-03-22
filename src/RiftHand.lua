@@ -7,6 +7,15 @@ function RIFTRAFT.RiftHand:init(...)
     self.ARGS.invisible_area_types = {rifthand = 1}
 end
 
+function RIFTRAFT.RiftHand:update(dt)
+    CardArea.update(self, dt)
+    if (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and #G.hand.cards > 0 then
+        self.T.y = G.TILE_H - self.T.h + 1
+    else
+        self.T.y = G.TILE_H - self.T.h
+    end
+end
+
 function RIFTRAFT.RiftHand:draw()
     CardArea.draw(self)
     for _,v in ipairs{'shadow', 'card'} do

@@ -7,14 +7,18 @@ priority = 1
 [[patches]]
 [patches.pattern]
 target = "game.lua"
-pattern = "self.consumeables = CardArea("
-position = "before"
+pattern = '''
+self.play = CardArea(
+    0, 0,
+    CAI.play_W,CAI.play_H, 
+    {card_limit = 5, type = 'play'})
+'''
+position = "after"
 payload = '''
 self.riftraft_void = RIFTRAFT.VoidCardArea(
     0, 0,
     CAI.discard_W, CAI.discard_W, -- square
     {card_limit = 500, type = 'void'})
-
 local limit = 5
 if next(SMODS.find_mod('Cryptid')) then
     limit = 1e20
