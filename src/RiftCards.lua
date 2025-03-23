@@ -587,9 +587,7 @@ RIFTRAFT.RiftCard{
         end}))
         if not RIFTRAFT.in_void_pack() then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                for i,v in ipairs(G.riftraft_rifthand.cards) do
-                    draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                end
+                RIFTRAFT.draw_from_rift_to_void()
                 return true
             end}))
         end
@@ -654,9 +652,7 @@ RIFTRAFT.RiftCard{
         end}))
         if not RIFTRAFT.in_void_pack() then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                for i,v in ipairs(G.riftraft_rifthand.cards) do
-                    draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                end
+                RIFTRAFT.draw_from_rift_to_void()
                 return true
             end}))
         end
@@ -706,9 +702,7 @@ RIFTRAFT.RiftCard{
         end}))
         if not RIFTRAFT.in_void_pack() then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                for i,v in ipairs(G.riftraft_rifthand.cards) do
-                    draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                end
+                RIFTRAFT.draw_from_rift_to_void()
                 return true
             end}))
         end
@@ -759,9 +753,7 @@ if next(SMODS.find_mod('Cryptid')) then
             end}))
             if not RIFTRAFT.in_void_pack() then
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                    for i,v in ipairs(G.riftraft_rifthand.cards) do
-                        draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                    end
+                    RIFTRAFT.draw_from_rift_to_void()
                     return true
                 end}))
             end
@@ -811,9 +803,7 @@ RIFTRAFT.RiftCard{
         end}))
         if not RIFTRAFT.in_void_pack() then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                for i,v in ipairs(G.riftraft_rifthand.cards) do
-                    draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                end
+                RIFTRAFT.draw_from_rift_to_void()
                 return true
             end}))
         end
@@ -989,9 +979,7 @@ RIFTRAFT.RiftCard{
         end}))
         if not RIFTRAFT.in_void_pack() then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                for i,v in ipairs(G.riftraft_rifthand.cards) do
-                    draw_card(G.riftraft_rifthand, G.riftraft_void, nil,'down', nil, v, 0.08)
-                end
+                RIFTRAFT.draw_from_rift_to_void()
                 return true
             end}))
         end

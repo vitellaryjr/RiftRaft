@@ -152,12 +152,23 @@ RIFTRAFT.draw_from_void_to_rift = function()
     -- G.riftraft_void:has_card_types_in(G.riftraft_rifthand.config.card_limit)
     delay(0.3)
     for i=1, G.riftraft_rifthand.config.card_limit do
-        draw_card(G.riftraft_void,G.riftraft_rifthand, i*100/G.riftraft_rifthand.config.card_limit, 'up', false)
+        local v = G.riftraft_void.cards[i]
+        if not v then break end
+        G.GAME.used_jokers[v.config.center.key] = true
+    end
+    for i=1, G.riftraft_rifthand.config.card_limit do
+        draw_card(G.riftraft_void, G.riftraft_rifthand, i*100/G.riftraft_rifthand.config.card_limit, 'up', false)
     end
 end
 
 RIFTRAFT.draw_from_rift_to_void = function()
     local hand_count = #G.riftraft_rifthand.cards
+    for i=1, hand_count do
+        local v = G.riftraft_rifthand.cards[i]
+        if not next(SMODS.find_card(v.config.center.key)) then
+            G.GAME.used_jokers[v.config.center.key] = nil
+        end
+    end
     for i=1, hand_count do
         draw_card(G.riftraft_rifthand, G.riftraft_void, i*100/hand_count,'down', nil, nil, 0.08)
     end
