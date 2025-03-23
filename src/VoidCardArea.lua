@@ -212,6 +212,15 @@ function RIFTRAFT.VoidCardArea:has_card_types_in(amount)
     return has
 end
 
+local card_highlight = Card.highlight
+function Card:highlight(is_highlighted)
+    card_highlight(self, is_highlighted)
+    if self.area and self.area == G.riftraft_rifthand and self.children.use_button then
+        self.children.use_button:remove()
+        self.children.use_button = nil
+    end
+end
+
 function RIFTRAFT.VoidCardArea:click()
     if self.send_active then
         if self.selecting_shop then

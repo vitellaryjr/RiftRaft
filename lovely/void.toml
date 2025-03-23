@@ -91,15 +91,6 @@ payload = '''
 '''
 match_indent = true
 
-# don't create a Use button for void hand consumeables
-[[patches]]
-[patches.regex]
-target = 'card.lua'
-pattern = "(?<indent>[\t ]*)if self.highlighted and self.area and self.area.config.type ~= 'shop'(?<a> )then"
-position = 'at'
-root_capture = 'a'
-payload = " and self.area.config.type ~= 'rifthand' "
-
 # send void pack cards back into the void once the booster pack is done
 [[patches]]
 [patches.pattern]
