@@ -45,12 +45,17 @@ SMODS.Atlas{
     px = 71,
     py = 95
 }
-SMODS.Atlas({
+SMODS.Atlas{
     key = "modicon",
     path = "mod_icon.png",
     px = 34,
     py = 34
-  })
+}
+SMODS.Gradient{
+    key = "void",
+    colours = {{0,0,0,1}, HEX("6b8286")},
+    cycle = 3,
+}
 
 local mod = SMODS.current_mod
 local config = mod.config

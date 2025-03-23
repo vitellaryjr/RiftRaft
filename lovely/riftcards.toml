@@ -3,42 +3,6 @@ version = "1.0.0"
 dump_lua = true
 priority = 1
 
-# initialize "rift card" color
-[[patches]]
-[patches.pattern]
-target = "globals.lua"
-pattern = "DARK_EDITION = {0,0,0,1},"
-position = "after"
-payload = '''
-RIFTRAFT_VOID = {0,0,0,1},
-'''
-match_indent = true
-
-# define keyword for using "rift card" color in text
-[[patches]]
-[patches.pattern]
-target = "functions/misc_functions.lua"
-pattern = "return G.ARGS.LOC_COLOURS[_c] or _default or G.C.UI.TEXT_DARK"
-position = "before"
-payload = '''
-G.ARGS.LOC_COLOURS["riftraft_void"] = G.C.RIFTRAFT_VOID
-'''
-match_indent = true
-
-# update "rift card" color
-[[patches]]
-[patches.pattern]
-target = "game.lua"
-pattern = "self.C.DARK_EDITION[2] = math.min(self.C.DARK_EDITION[3], self.C.DARK_EDITION[1])"
-position = "after"
-payload = '''
-local riftraft_target = HEX("6b8286")
-for i=1,3 do
-    self.C.RIFTRAFT_VOID[i] = riftraft_target[i] * (math.sin(self.TIMERS.REAL*2) + 1) / 2
-end
-'''
-match_indent = true
-
 # prevent the Negative tooltip from showing up for every rift card
 # [[patches]]
 # [patches.regex]
