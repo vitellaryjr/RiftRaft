@@ -4,13 +4,6 @@ dump_lua = true
 priority = 1
 
 # prevent the Negative tooltip from showing up for every rift card
-# [[patches]]
-# [patches.regex]
-# target = 'functions/common_events.lua'
-# pattern = "(?<indent>[\t ]*)if(?<a> )v:sub\\(1,9\\) == 'negative_' then"
-# position = 'at'
-# root_capture = 'a'
-# payload = ' _c.set ~= "Rift" and '
 [[patches]]
 [patches.pattern]
 target = "card.lua"

@@ -3,21 +3,16 @@ version = "1.0.0"
 dump_lua = true
 priority = 1
 
-# allow always buying joke
+# allow always selected joke from a pack
 [[patches]]
-[patches.regex]
+[patches.pattern]
 target = 'functions/button_callbacks.lua'
-pattern = "(?<indent>[\t ]*)if e.config.ref_table.ability.set ~= 'Joker'(?<a> )or \\(e.config.ref_table.edition and e.config.ref_table.edition.negative\\) or #G.jokers.cards < G.jokers.config.card_limit then "
-position = 'at'
-root_capture = 'a'
-payload = " or e.config.ref_table.config.center.key == 'j_riftraft_joke' "
-[[patches]]
-[patches.regex]
-target = 'functions/button_callbacks.lua'
-pattern = "(?<indent>[\t ]*)not \\(card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit(?<a> )\\+ \\(\\(card.edition and card.edition.negative\\) and 1 or 0\\)\\) and"
-position = 'at'
-root_capture = 'a'
-payload = " + (card.config.center.key == 'j_riftraft_joke' and 1 or 0) "
+pattern = "local card_limit = card.edition and card.edition.card_limit or 0"
+position = "after"
+payload = '''
+if card.config.center.key == 'j_riftraft_joke' then card_limit = card_limit + card.ability.extra.amount end
+'''
+match_indent = true
 
 # prevent base card chips from scoring if you have Backwards
 [[patches]]
@@ -31,15 +26,6 @@ if (G.GAME.j_riftraft_backwards or 0) > 0 then
 end
 '''
 match_indent = true
-
-# prevent negative cards from being drawn when setting a card to negative after round end
-[[patches]]
-[patches.regex]
-target = '=[SMODS _ "src/overrides.lua"]'
-pattern = "(?<indent>[\t ]*)if not is_in_pack(?<a> )then"
-position = 'at'
-root_capture = 'a'
-payload = " and G.GAME.blind.in_blind "
 
 # add current Abyss-copied joker to find_joker
 [[patches]]

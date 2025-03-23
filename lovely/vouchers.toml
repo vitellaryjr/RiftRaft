@@ -3,24 +3,6 @@ version = "1.0.0"
 dump_lua = true
 priority = 1
 
-# make Negation and Vastness render with the negative shader
-# [[patches]]
-# [patches.regex]
-# target = 'card.lua'
-# pattern = "(?<indent>[\t ]*)if \\(self.edition and self.edition.negative\\) or \\((?<a>self.ability.name == 'Antimatter') and \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
-# position = 'at'
-# root_capture = 'a'
-# payload = "(self.ability.name == 'Antimatter' or self.config.center_key == 'v_riftraft_negative_hone' or self.config.center_key == 'v_riftraft_negative_consume')"
-
-# prevent Negation and Vastness from rendering with the voucher shader
-# [[patches]]
-# [patches.regex]
-# target = 'card.lua'
-# pattern = "(?<indent>[\t ]*)if \\(self.ability.set == 'Voucher' or self.config.center.demo\\) and \\((?<a>self.ability.name ~= 'Antimatter') or not \\(self.config.center.discovered or self.bypass_discovery_center\\)\\) then"
-# position = 'at'
-# root_capture = 'a'
-# payload = "(self.ability.name ~= 'Antimatter' and self.config.center_key ~= 'v_riftraft_negative_hone' and self.config.center_key ~= 'v_riftraft_negative_consume')"
-
 # prevent Negation and Vastness from having a +1 Joker Slot badge
 [[patches]]
 [patches.pattern]
@@ -86,12 +68,18 @@ match_indent = true
 
 # allow playing cards to be negative if Vastness is purchased
 [[patches]]
-[patches.regex]
-target = '=[SMODS _ "src/game_object.lua"]'
-pattern = "(?<indent>[\t ]*)local _edition = poll_edition\\('standard_edition'..G.GAME.round_resets.ante, 2, (?<a>true)\\)"
-position = 'at'
-root_capture = 'a'
-payload = "(not RIFTRAFT.negative_playing_cards or not G.GAME.used_vouchers.v_riftraft_negative_consume)"
+[patches.pattern]
+target = "game.lua"
+pattern = "local _edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, 2, true)"
+position = "after"
+payload = '''
+if RIFTRAFT.negative_playing_cards and G.GAME.used_vouchers.v_riftraft_negative_consume then
+    -- not super great that we just poll again but whatever
+    -- better than replacing the code i think
+    _edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, 2, nil)
+end
+'''
+match_indent = true
 
 # add an extra void card copy if Inversion Invasion is purchased
 [[patches]]
