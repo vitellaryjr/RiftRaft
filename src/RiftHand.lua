@@ -7,6 +7,15 @@ function RIFTRAFT.RiftHand:init(...)
     self.ARGS.invisible_area_types = {rifthand = 1}
 end
 
+if next(SMODS.find_mod('Cryptid')) then
+    local banned_areas = Card.get_banned_force_popup_areas
+    function Card:get_banned_force_popup_areas()
+        local result = banned_areas(self)
+        table.insert(result, G.riftraft_rifthand)
+        return result
+    end
+end
+
 function RIFTRAFT.RiftHand:update(dt)
     CardArea.update(self, dt)
     if (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and #G.hand.cards > 0 then
