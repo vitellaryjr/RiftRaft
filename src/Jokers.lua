@@ -1193,7 +1193,7 @@ SMODS.Sticker{
     no_collection = true,
 }
 function RIFTRAFT.get_win_sticker(center)
-    if G.PROFILES[G.SETTINGS.profile].joker_usage[center.key] then
+    if G.PROFILES[G.SETTINGS.profile].joker_usage and G.PROFILES[G.SETTINGS.profile].joker_usage[center.key] then
         local index = G.PROFILES[G.SETTINGS.profile].joker_usage[center.key].riftraft_win_key
         if index and index > 0 then
             return (index == 1 and 'riftraft_negative_clear') or (index == 2 and 'riftraft_duplicate_clear')
