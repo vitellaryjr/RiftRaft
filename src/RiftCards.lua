@@ -217,7 +217,7 @@ RIFTRAFT.RiftCard{
         }
     end,
     config = {
-        extra = {select = 3},
+        extra = {select = 5},
     },
     pos = {x = 1, y = 2},
     cost = 1,
@@ -350,8 +350,10 @@ RIFTRAFT.RiftCard{
         
         -- okayy this is harder than i thought
         -- we have to recursively loop through the table to make sure we check can_use after the previous consumable's events have been queued
+        local temp_hand = {}
+        for k, v in ipairs(G.riftraft_rifthand.highlighted) do temp_hand[#temp_hand+1] = v end
         local function use_card(i)
-            local v = G.riftraft_rifthand.highlighted[i]
+            local v = temp_hand[i]
             if not v then return end
             if v:can_use_consumeable(true, true) then
                 v:use_consumeable(v.area)
