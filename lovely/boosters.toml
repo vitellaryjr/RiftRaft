@@ -20,7 +20,7 @@ end
 if G.GAME.modifiers["riftraft_no_void"] or G.GAME.modifiers["riftraft_only_void"] then
     void_rate = 0
 end
-if G.GAME.riftraft_abyssal_deck or (pseudorandom(pseudoseed('pack_spawnvoid'..G.GAME.round_resets.ante)) <= void_rate) then
+if G.GAME.riftraft_abyssal_deck or G.GAME.used_vouchers.v_riftraft_booster_slut or (pseudorandom(pseudoseed('pack_spawnvoid'..G.GAME.round_resets.ante)) <= void_rate) then
     G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + 1
     spawn_void = G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0)
 end

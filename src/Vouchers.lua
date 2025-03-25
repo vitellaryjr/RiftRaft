@@ -113,15 +113,35 @@ SMODS.Voucher{
     loc_txt = {
         name = "Microtransaction",
         text = {
-            "Rerolls include",
-            "booster packs,",
-            "rerolls increase",
-            "by {C:money}$3{} {C:red}each{}"
+            -- "Rerolls include",
+            -- "booster packs,",
+            -- "rerolls increase",
+            -- "by {C:money}$3{} {C:red}each{}"
+            "{C:attention}+1{} booster pack",
+            "per {C:attention}shop{},",
+            "shop always has",
+            "a {C:riftraft_void}Void{} Pack",
         },
     },
     atlas = "RiftShop",
     pos = {x = 2, y = 2},
     requires = {"v_riftraft_booster_plus"},
+    redeem = function(self, voucher)
+        G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + 1
+        -- loosely copied from change_shop_size (used by overstock)
+        if not G.GAME.shop then return end
+        if G.shop_booster and G.shop_booster.cards then
+            G.shop_booster.config.card_limit = G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0)
+            for i = #G.shop_booster.cards + 1, G.shop_booster.config.card_limit do
+                G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
+                local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
+                G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+                create_shop_card_ui(card, 'Booster', G.shop_booster)
+                card.ability.booster_pos = i
+                G.shop_booster:emplace(card)
+            end
+        end
+    end,
 }
 
 SMODS.Voucher{

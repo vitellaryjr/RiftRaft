@@ -124,111 +124,111 @@ end
 match_indent = true
 
 # reroll booster packs in shop if Microtransaction is purchased
-[[patches]]
-[patches.pattern]
-target = 'functions/button_callbacks.lua'
-pattern = "for i = #G.shop_jokers.cards,1, -1 do"
-position = "before"
-payload = '''
-if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
-    for i = #G.shop_booster.cards, 1, -1 do
-        local c = G.shop_booster:remove_card(G.shop_booster.cards[i])
-        c:remove()
-        c = nil
-    end
-end
-'''
-match_indent = true
-[[patches]]
-[patches.pattern]
-target = 'functions/button_callbacks.lua'
-pattern = "for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do"
-position = "before"
-payload = '''
-if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
-    local riftraft_orig_amount = G.GAME.modifiers.extra_boosters
-    local spawn_void = nil
-    local void_rate = RIFTRAFT.void_pack_rate
-    if #G.riftraft_void.cards == 0 or G.GAME.modifiers["riftraft_no_void"] or G.GAME.modifiers["riftraft_only_void"] then
-        -- void_rate = void_rate * 0.5 -- allows packs to spawn at a rarer rate even with nothing in the void
-        void_rate = 0
-    end
-    if G.GAME.riftraft_abyssal_deck or (pseudorandom(pseudoseed('pack_spawnvoid'..G.GAME.round_resets.ante)) <= void_rate) then
-        G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + 1
-        spawn_void = G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0)
-    end
-    local riftraft_tracked_packs = {}
-    local riftraft_pack_list = {}
-    if G.GAME.used_vouchers.v_riftraft_booster_gluttony then
-        for k, v in ipairs(G.P_CENTER_POOLS.Booster) do
-            if v.kind and not G.GAME.banned_keys[v.key] then
-                if not riftraft_tracked_packs[v.kind] then
-                    riftraft_tracked_packs[v.kind] = {}
-                    riftraft_tracked_packs[v.kind].kind = v.kind
-                    table.insert(riftraft_pack_list, riftraft_tracked_packs[v.kind])
-                end
-                table.insert(riftraft_tracked_packs[v.kind], v)
-                riftraft_tracked_packs[v.kind].full_weight = (riftraft_tracked_packs[v.kind].full_weight or 0) + (v.weight or 1)
-            end
-        end
-        G.GAME.modifiers.extra_boosters = #riftraft_pack_list - G.GAME.starting_params.boosters_in_shop
-        pseudoshuffle(riftraft_pack_list, pseudoseed('booster_glut'))
-    end
-    G.GAME.current_round.used_packs = {}
-    for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
-        if G.GAME.used_vouchers.v_riftraft_booster_gluttony and riftraft_pack_list[i] then
-            local packs = riftraft_pack_list[i]
-            local cume, it, center = packs.full_weight, 0, nil
-            local poll = pseudorandom(pseudoseed(('pack_glut_'..packs.kind)..G.GAME.round_resets.ante))*cume
-            for k, v in ipairs(packs) do
-                it = it + (v.weight or 1)
-                if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
-            end
-            G.GAME.current_round.used_packs[i] = center.key
-        else
-            local is_void = (i == spawn_void) or G.GAME.modifiers["riftraft_only_void"]
-            if is_void then
-                local voidpack_rng = pseudorandom(pseudoseed('pack_void_type'..G.GAME.round_resets.ante), 1, 13)
-                local voidpack_type = 1
-                if voidpack_rng > 4 then voidpack_type = voidpack_type + 1 end
-                if voidpack_rng > 8 then voidpack_type = voidpack_type + 1 end
-                if voidpack_rng > 12 then voidpack_type = voidpack_type + 1 end
-                if G.GAME.riftraft_abyssal_deck then
-                    voidpack_type = 4
-                end
-                G.GAME.current_round.used_packs[i] = "p_riftraft_voidpack" .. voidpack_type
-            end
-        end
-        if not G.GAME.current_round.used_packs[i] then
-            G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
-        end
+# [[patches]]
+# [patches.pattern]
+# target = 'functions/button_callbacks.lua'
+# pattern = "for i = #G.shop_jokers.cards,1, -1 do"
+# position = "before"
+# payload = '''
+# if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
+#     for i = #G.shop_booster.cards, 1, -1 do
+#         local c = G.shop_booster:remove_card(G.shop_booster.cards[i])
+#         c:remove()
+#         c = nil
+#     end
+# end
+# '''
+# match_indent = true
+# [[patches]]
+# [patches.pattern]
+# target = 'functions/button_callbacks.lua'
+# pattern = "for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do"
+# position = "before"
+# payload = '''
+# if G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters'] then
+#     local riftraft_orig_amount = G.GAME.modifiers.extra_boosters
+#     local spawn_void = nil
+#     local void_rate = RIFTRAFT.void_pack_rate
+#     if #G.riftraft_void.cards == 0 or G.GAME.modifiers["riftraft_no_void"] or G.GAME.modifiers["riftraft_only_void"] then
+#         -- void_rate = void_rate * 0.5 -- allows packs to spawn at a rarer rate even with nothing in the void
+#         void_rate = 0
+#     end
+#     if G.GAME.riftraft_abyssal_deck or (pseudorandom(pseudoseed('pack_spawnvoid'..G.GAME.round_resets.ante)) <= void_rate) then
+#         G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + 1
+#         spawn_void = G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0)
+#     end
+#     local riftraft_tracked_packs = {}
+#     local riftraft_pack_list = {}
+#     if G.GAME.used_vouchers.v_riftraft_booster_gluttony then
+#         for k, v in ipairs(G.P_CENTER_POOLS.Booster) do
+#             if v.kind and not G.GAME.banned_keys[v.key] then
+#                 if not riftraft_tracked_packs[v.kind] then
+#                     riftraft_tracked_packs[v.kind] = {}
+#                     riftraft_tracked_packs[v.kind].kind = v.kind
+#                     table.insert(riftraft_pack_list, riftraft_tracked_packs[v.kind])
+#                 end
+#                 table.insert(riftraft_tracked_packs[v.kind], v)
+#                 riftraft_tracked_packs[v.kind].full_weight = (riftraft_tracked_packs[v.kind].full_weight or 0) + (v.weight or 1)
+#             end
+#         end
+#         G.GAME.modifiers.extra_boosters = #riftraft_pack_list - G.GAME.starting_params.boosters_in_shop
+#         pseudoshuffle(riftraft_pack_list, pseudoseed('booster_glut'))
+#     end
+#     G.GAME.current_round.used_packs = {}
+#     for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
+#         if G.GAME.used_vouchers.v_riftraft_booster_gluttony and riftraft_pack_list[i] then
+#             local packs = riftraft_pack_list[i]
+#             local cume, it, center = packs.full_weight, 0, nil
+#             local poll = pseudorandom(pseudoseed(('pack_glut_'..packs.kind)..G.GAME.round_resets.ante))*cume
+#             for k, v in ipairs(packs) do
+#                 it = it + (v.weight or 1)
+#                 if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
+#             end
+#             G.GAME.current_round.used_packs[i] = center.key
+#         else
+#             local is_void = (i == spawn_void) or G.GAME.modifiers["riftraft_only_void"]
+#             if is_void then
+#                 local voidpack_rng = pseudorandom(pseudoseed('pack_void_type'..G.GAME.round_resets.ante), 1, 13)
+#                 local voidpack_type = 1
+#                 if voidpack_rng > 4 then voidpack_type = voidpack_type + 1 end
+#                 if voidpack_rng > 8 then voidpack_type = voidpack_type + 1 end
+#                 if voidpack_rng > 12 then voidpack_type = voidpack_type + 1 end
+#                 if G.GAME.riftraft_abyssal_deck then
+#                     voidpack_type = 4
+#                 end
+#                 G.GAME.current_round.used_packs[i] = "p_riftraft_voidpack" .. voidpack_type
+#             end
+#         end
+#         if not G.GAME.current_round.used_packs[i] then
+#             G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
+#         end
 
-        local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
-        G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
-        create_shop_card_ui(card, 'Booster', G.shop_booster)
-        card.ability.booster_pos = i
-        card:start_materialize()
-        G.shop_booster:emplace(card)
-        card:juice_up()
-        if is_void then
-            card:set_edition({negative = true})
-        end
-    end
-    G.GAME.modifiers.extra_boosters = riftraft_orig_amount
-end
-'''
-match_indent = true
+#         local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
+#         G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+#         create_shop_card_ui(card, 'Booster', G.shop_booster)
+#         card.ability.booster_pos = i
+#         card:start_materialize()
+#         G.shop_booster:emplace(card)
+#         card:juice_up()
+#         if is_void then
+#             card:set_edition({negative = true})
+#         end
+#     end
+#     G.GAME.modifiers.extra_boosters = riftraft_orig_amount
+# end
+# '''
+# match_indent = true
 
 # increase rate rerolls increase by if Microtransaction is purchased
-[[patches]]
-[patches.pattern]
-target = 'functions/common_events.lua'
-pattern = "if not skip_increment then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 1 end"
-position = "after"
-payload = '''
-if not skip_increment and (G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters']) then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 2 end
-'''
-match_indent = true
+# [[patches]]
+# [patches.pattern]
+# target = 'functions/common_events.lua'
+# pattern = "if not skip_increment then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 1 end"
+# position = "after"
+# payload = '''
+# if not skip_increment and (G.GAME.used_vouchers.v_riftraft_booster_slut and not G.GAME.used_vouchers['v_betm_vouchers_4d_boosters']) then G.GAME.current_round.reroll_cost_increase = G.GAME.current_round.reroll_cost_increase + 2 end
+# '''
+# match_indent = true
 
 # increase cards / choices per pack
 [[patches]]
