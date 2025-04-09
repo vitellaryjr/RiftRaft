@@ -181,7 +181,7 @@ function RIFTRAFT.VoidCardArea:can_send()
     if send_card.config.center.set == 'Rift' then
         self.selecting_shop = false; return false
     end
-    if (cost > 0) and (to_big(cost) > G.GAME.dollars - G.GAME.bankrupt_at) and (cost > 0) then
+    if (cost > 0) and (to_big(cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at)) and (cost > 0) then
         return false
     end
     return true
