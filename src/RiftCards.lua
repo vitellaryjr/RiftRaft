@@ -1688,3 +1688,13 @@ RIFTRAFT.check_destroy_for_seal = function(card)
         end}))
     end
 end
+local calc_context_ref = SMODS.calculate_context
+function SMODS.calculate_context(context, return_table)
+    if context.remove_playing_cards then
+        for _, v in ipairs(context.removed or {}) do
+            RIFTRAFT.check_destroy_for_seal(v)
+        end
+    end
+
+    return calc_context_ref(context, return_table)
+end

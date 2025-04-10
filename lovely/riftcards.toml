@@ -39,52 +39,6 @@ end
 '''
 match_indent = true
 
-# create a rift card when a black seal card is destroyed
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = '-- TARGET: effects when cards are removed'
-position = "after"
-payload = '''
-for i,v in ipairs(cards_destroyed) do
-    RIFTRAFT.check_destroy_for_seal(v)
-end
-'''
-match_indent = true
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = '-- TARGET: effects after cards destroyed in discard'
-position = "after"
-payload = '''
-for i,v in ipairs(destroyed_cards) do
-    RIFTRAFT.check_destroy_for_seal(v)
-end
-'''
-match_indent = true
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = 'SMODS.calculate_context({ remove_playing_cards = true, removed = destroyed_cards })'
-position = "before"
-payload = '''
-for i,v in ipairs(destroyed_cards) do
-    RIFTRAFT.check_destroy_for_seal(v)
-end
-'''
-match_indent = true
-[[patches]]
-[patches.pattern]
-target = '=[SMODS _ "src/game_object.lua"]'
-pattern = 'SMODS.calculate_context({ remove_playing_cards = true, removed = destroyed_cards })'
-position = "before"
-payload = '''
-for i,v in ipairs(destroyed_cards) do
-    RIFTRAFT.check_destroy_for_seal(v)
-end
-'''
-match_indent = true
-
 # create the void UI in view deck
 [[patches]]
 [patches.regex]
