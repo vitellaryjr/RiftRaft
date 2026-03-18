@@ -4,19 +4,20 @@ dump_lua = true
 priority = 1
 
 # prevent Negation and Vastness from having a +1 Joker Slot badge
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''
-if self.edition.type == 'negative' and self.ability.consumeable then
-    badges[#badges + 1] = 'negative_consumable'
-'''
-position = "after"
-payload = '''
-elseif self.edition.type == 'negative' and self.ability.set == 'Voucher' and (self.config.center.key:sub(1,19) == 'v_riftraft_negative') then
-    -- don't do anything
-'''
-match_indent = true
+# COMMENTED REASON: they no longer say "joker slot", they now dont add info themselves and rely on their inherent "+1 area slot" info
+# [[patches]]
+# [patches.pattern]
+# target = "card.lua"
+# pattern = '''
+# if self.edition.type == 'negative' and self.ability.consumeable then
+#     badges[#badges + 1] = 'negative_consumable'
+# '''
+# position = "after"
+# payload = '''
+# elseif self.edition.type == 'negative' and self.ability.set == 'Voucher' and (self.config.center.key:sub(1,19) == 'v_riftraft_negative') then
+#     -- don't do anything
+# '''
+# match_indent = true
 
 # increase negative odds if Negation is purchased
 # [[patches]]
@@ -69,7 +70,7 @@ match_indent = true
 # allow playing cards to be negative if Vastness is purchased
 [[patches]]
 [patches.pattern]
-target = "game.lua"
+target = '=[SMODS _ "src/game_object.lua"]'
 pattern = "local _edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, 2, true)"
 position = "after"
 payload = '''
@@ -231,34 +232,35 @@ match_indent = true
 # match_indent = true
 
 # increase cards / choices per pack
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = "if self.ability.set == 'Booster' then"
-position = "after"
-payload = '''
-    if G.GAME.used_vouchers.v_riftraft_cardpack_card then
-        self.ability.extra = (self.ability.extra or 2) + 1
-    end
-    if G.GAME.used_vouchers.v_riftraft_cardpack_choose then
-        self.ability.choose = (self.ability.choose or 1) + 1
-    end
-    if G.GAME.used_vouchers.v_riftraft_cardpack_max then
-        self.ability.choose = self.ability.extra
-    end
-'''
-match_indent = true
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = "G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1"
-position = "after"
-payload = '''
-if (G.GAME.used_vouchers.v_riftraft_cardpack_choose or G.GAME.used_vouchers.v_riftraft_cardpack_max) and (not self.ability.choose or G.GAME.pack_choices < self.ability.choose) then
-    G.GAME.pack_choices = self.ability.choose or (G.GAME.pack_choices + 1)
-end
-'''
-match_indent = true
+# COMMENTED REASON: smods now provides built-in game variables for extra booster cards/choices, which are now increased on redeem
+# [[patches]]
+# [patches.pattern]
+# target = "card.lua"
+# pattern = "if self.ability.set == 'Booster' then"
+# position = "after"
+# payload = '''
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_card then
+#         self.ability.extra = (self.ability.extra or 2) + 1
+#     end
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_choose then
+#         self.ability.choose = (self.ability.choose or 1) + 1
+#     end
+#     if G.GAME.used_vouchers.v_riftraft_cardpack_max then
+#         self.ability.choose = self.ability.extra
+#     end
+# '''
+# match_indent = true
+# [[patches]]
+# [patches.pattern]
+# target = "card.lua"
+# pattern = "G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1"
+# position = "after"
+# payload = '''
+# if (G.GAME.used_vouchers.v_riftraft_cardpack_choose or G.GAME.used_vouchers.v_riftraft_cardpack_max) and (not self.ability.choose or G.GAME.pack_choices < self.ability.choose) then
+#     G.GAME.pack_choices = self.ability.choose or (G.GAME.pack_choices + 1)
+# end
+# '''
+# match_indent = true
 # [[patches]]
 # [patches.pattern]
 # target = '=[SMODS _ "src/game_object.lua"]'

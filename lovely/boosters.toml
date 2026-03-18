@@ -123,23 +123,37 @@ match_indent = true
 # add a negative booster pack description
 [[patches]]
 [patches.pattern]
-target = "card.lua"
-pattern = '''
-if self.edition.type == 'negative' and self.ability.consumeable then
-    badges[#badges + 1] = 'negative_consumable'
-'''
+target = '=[SMODS _ "src/game_object.lua"]'
+pattern = "playing_card = string.sub(self.key, 3) .. '_playing_card' .. '_SMODS_INTERNAL',"
 position = "after"
+payload = "riftraft_booster = string.sub(self.key, 3) .. '_riftraft_booster' .. '_SMODS_INTERNAL',"
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/game_object.lua"]'
+pattern = '''
+elseif card.ability.consumeable then
+    return self.card_limit_keys['consumable']
+'''
+position = "before"
 payload = '''
-elseif self.edition.type == 'negative' and self.ability.set == 'Booster' then
-    badges[#badges + 1] = 'negative_booster'
+elseif card.ability.set == 'Booster' and card.config.center.key:find('p_riftraft_voidpack') then
+	return self.card_limit_keys['riftraft_booster']
 '''
 match_indent = true
 [[patches]]
 [patches.pattern]
 target = "functions/UI_definitions.lua"
-pattern = 'badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))'
-position = "before"
+pattern = '''
+G.shop_booster = CardArea(
+  G.hand.T.x+0,
+  G.hand.T.y+G.ROOM.T.y + 9,
+  2.4*G.CARD_W,
+  1.15*G.CARD_H,
+  {card_limit = 2, type = 'shop', highlight_limit = 1, card_w = 1.27*G.CARD_W})
+'''
+position = "after"
 payload = '''
-if v == 'negative_booster' or v == 'negative_generic' then v = 'negative' end
+G.shop_booster.config.negative_info = true
 '''
 match_indent = true

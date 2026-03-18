@@ -7,7 +7,7 @@
 	"main_file": "src/RiftRaft.lua",
 	"priority": 115,
 	"dependencies": [
-		"Steamodded (>=1.*)",
+		"Steamodded (>=1.0.0~BETA-1221a)",
 		"Lovely (>=0.7)"
 	],
 	"version": "1.0.0"

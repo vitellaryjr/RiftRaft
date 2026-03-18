@@ -10,7 +10,7 @@ target = "game.lua"
 pattern = '''
 self.play = CardArea(
     0, 0,
-    CAI.play_W,CAI.play_H, 
+    CAI.play_W,CAI.play_H,
     {card_limit = 5, type = 'play', negative_info = 'playing_card'})
 '''
 position = "after"
@@ -25,8 +25,8 @@ if next(SMODS.find_mod('Cryptid')) then
 end
 self.riftraft_rifthand = RIFTRAFT.RiftHand(
     0, 0,
-    CAI.hand_W,CAI.hand_H, 
-    {card_limit = self.GAME.starting_params.hand_size, highlight_limit = limit, type = 'rifthand'}
+    CAI.hand_W,CAI.hand_H,
+    {card_limit = self.GAME.starting_params.hand_size, highlight_limit = limit, negative_info = true, type = 'rifthand'}
 )
 '''
 match_indent = true
@@ -70,13 +70,13 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = 'G.GAME.pack_choices = self.config.center.config.choose or 1'
-position = "before"
+pattern = 'SMODS.OPENED_BOOSTER = self'
+position = "after"
 payload = '''
-if booster_obj and booster_obj.key:find('p_riftraft_voidpack') and G.riftraft_void then
+if booster_obj.key:find('p_riftraft_voidpack') and G.riftraft_void then
     G.riftraft_void:shuffle("voidpack_draw")
 end
-    
+
 '''
 match_indent = true
 
@@ -138,8 +138,8 @@ end
 '''
 position = "after"
 payload = '''
-if not G.SETTINGS.paused and G.riftraft_rifthand and G.riftraft_rifthand.highlighted[1] then 
-    if (self.locked) or 
+if not G.SETTINGS.paused and G.riftraft_rifthand and G.riftraft_rifthand.highlighted[1] then
+    if (self.locked) or
     (self.locks.frame) or
     (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) then return end
     G.riftraft_rifthand:unhighlight_all()

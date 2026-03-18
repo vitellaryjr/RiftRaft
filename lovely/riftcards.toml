@@ -7,10 +7,12 @@ priority = 1
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = "badges[#badges + 1] = 'negative_consumable'"
+pattern = "badges[#badges + 1] = SMODS.Edition.get_card_limit_key(self)"
 position = "after"
 payload = '''
-if self.config.center.set == 'Rift' then badges[#badges] = nil end
+if self.ability.set == 'Rift' then
+	badges[#badges] = nil
+end
 '''
 match_indent = true
 

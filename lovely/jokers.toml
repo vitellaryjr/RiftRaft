@@ -3,17 +3,6 @@ version = "1.0.0"
 dump_lua = true
 priority = 1
 
-# allow always selected joke from a pack
-[[patches]]
-[patches.pattern]
-target = 'functions/button_callbacks.lua'
-pattern = "local card_limit = card.edition and card.edition.card_limit or 0"
-position = "after"
-payload = '''
-if card.config.center.key == 'j_riftraft_joke' then card_limit = card_limit + card.ability.extra.amount end
-'''
-match_indent = true
-
 # prevent base card chips from scoring if you have Backwards
 [[patches]]
 [patches.pattern]
@@ -96,7 +85,7 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
-pattern = "delay(0.4); ease_ante(1); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})"
+pattern = "delay(0.4); SMODS.ante_end = true; ease_ante(1); SMODS.ante_end = nil; delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})"
 position = "after"
 payload = '''
 if (G.GAME.round_resets.ante + 1) == 12 then

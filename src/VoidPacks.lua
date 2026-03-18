@@ -18,12 +18,12 @@ for i,v in ipairs(booster_types) do
             group_name = "Void Pack",
         },
         loc_vars = function(self, info_queue, pack)
-            return {
-                vars = {
-                    pack.ability.choose,
-                    pack.ability.extra,
-                }
-            }
+            local cfg = (card and card.ability) or self.config
+
+            local size = math.max(1, cfg.extra + (G.GAME.modifiers.booster_size_mod or 0))
+            local choices = math.min(cfg.choose + (G.GAME.modifiers.booster_choice_mod or 0), size)
+
+            return {vars = {choices, size}}
         end,
         config = {
             choose = v[2],
@@ -85,7 +85,7 @@ for i,v in ipairs(booster_types) do
         update_pack = function(self, dt)
             if G.buttons then G.buttons:remove(); G.buttons = nil end
             if G.shop then G.shop.alignment.offset.y = G.ROOM.T.y+11 end
-        
+
             if not G.STATE_COMPLETE then
                 G.STATE_COMPLETE = true
                 G.CONTROLLER.interrupt.focus = true
@@ -104,7 +104,7 @@ for i,v in ipairs(booster_types) do
                             trigger = 'immediate',
                             func = function()
                                 RIFTRAFT.draw_from_void_to_rift()
-        
+
                                 G.E_MANAGER:add_event(Event({
                                     trigger = 'after',
                                     delay = 0.5,
@@ -114,10 +114,10 @@ for i,v in ipairs(booster_types) do
                                     end}))
                                 return true
                             end
-                        }))  
+                        }))
                         return true
                     end
-                }))  
+                }))
             end
         end,
         atlas = "RiftShop",
@@ -265,7 +265,7 @@ SMODS.Tag{
                 local temp_hand = {}
                 for k, v in ipairs(G.riftraft_void.cards) do temp_hand[#temp_hand+1] = v end
                 pseudoshuffle(temp_hand, pseudoseed('tag_pull'))
-                
+
                 local void_copy = function(to_copy)
                     local new_card = copy_card(to_copy)
                     new_card:add_to_deck()

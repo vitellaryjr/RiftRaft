@@ -8,10 +8,7 @@ SMODS.Voucher{
         },
     },
     loc_vars = function(self, info_queue, voucher)
-        info_queue[#info_queue+1] = {key = "e_negative", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
-        return {
-            vars = {voucher.ability.mult}
-        }
+        return {vars = {voucher.ability.mult}}
     end,
     config = {
         mult = 3,
@@ -38,10 +35,6 @@ SMODS.Voucher{
             "be {C:dark_edition}Negative{}",
         },
     },
-    loc_vars = function(self, info_queue, voucher)
-        info_queue[#info_queue+1] = {key = "e_negative_consumable", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
-        return {}
-    end,
     atlas = "RiftShop",
     pos = {x = 2, y = 1},
     set_ability = function(self, card, initial, delay_sprites)
@@ -183,12 +176,15 @@ SMODS.Voucher{
     atlas = "RiftShop",
     pos = {x = 3, y = 2},
     redeem = function(self, voucher)
+    	G.GAME.modifiers.booster_size_mod = (G.GAME.modifiers.booster_size_mod or 0) + 1
+    	--[[
         if not G.GAME.shop then return end
         if G.shop_booster and G.shop_booster.cards then
             for _, booster in ipairs(G.shop_booster.cards) do
                 booster.ability.extra = (booster.ability.extra or 2) + 1
             end
         end
+        ]]
     end,
 }
 SMODS.Voucher{
@@ -204,12 +200,15 @@ SMODS.Voucher{
     pos = {x = 4, y = 2},
     requires = {"v_riftraft_cardpack_card"},
     redeem = function(self, voucher)
+    	G.GAME.modifiers.booster_choice_mod = (G.GAME.modifiers.booster_choice_mod or 0) + 1
+    	--[[
         if not G.GAME.shop then return end
         if G.shop_booster and G.shop_booster.cards then
             for _, booster in ipairs(G.shop_booster.cards) do
                 booster.ability.choose = (booster.ability.choose or 1) + 1
             end
         end
+        ]]
     end,
 }
 
@@ -308,12 +307,15 @@ if next(SMODS.find_mod('Cryptid')) then
         pos = {x = 4, y = 3},
         requires = {"v_riftraft_cardpack_card"},
         redeem = function(self, voucher)
+        	G.GAME.modifiers.booster_choice_mod = 999999999
+         	--[[
             if not G.GAME.shop then return end
             if G.shop_booster and G.shop_booster.cards then
                 for _, booster in ipairs(G.shop_booster.cards) do
                     booster.ability.choose = booster.ability.extra or 2
                 end
             end
+            ]]
         end,
     }
 end

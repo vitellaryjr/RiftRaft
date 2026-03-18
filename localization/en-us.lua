@@ -1,13 +1,7 @@
 return {
     descriptions = {
         Edition = {
-            e_negative_generic = {
-                name = "Negative",
-                text = {
-                    "{C:dark_edition}+#1#{} slot",
-                },
-            },
-            e_negative_booster = {
+            e_negative_riftraft_booster = {
                 name = "Negative",
                 text = {
                     "{C:dark_edition}+#1#{} Booster Pack",

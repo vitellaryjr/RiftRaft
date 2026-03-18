@@ -274,6 +274,7 @@ RIFTRAFT.VoidJoker{
         },
     },
     config = {
+    	card_limit = 1,
         extra = {amount = 1},
     },
     loc_vars = function(self, info_queue, card)
@@ -284,16 +285,6 @@ RIFTRAFT.VoidJoker{
     rarity = 3,
     cost = 2,
     blueprint_compat = false,
-    add_to_deck = function(self, card, from_debuff)
-        if not from_debuff then
-            G.jokers.config.card_limit = G.jokers.config.card_limit + card.ability.extra.amount
-        end
-    end,
-    remove_from_deck = function(self, card, from_debuff)
-        if not from_debuff then
-            G.jokers.config.card_limit = G.jokers.config.card_limit - card.ability.extra.amount
-        end
-    end,
 }
 SMODS.Joker{
     key = "magnify",
@@ -909,7 +900,7 @@ SMODS.Joker{
                     card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_again_ex'), instant = true})
 
                     copy_card(_card, new_card)
-                    if add_to_deck and _card.added_to_deck and not new_card.add_to_deck then                        
+                    if add_to_deck and _card.added_to_deck and not new_card.add_to_deck then
                         new_card:add_to_deck()
                     end
                     new_card:start_materialize()
@@ -1134,7 +1125,7 @@ if next(SMODS.find_mod('Cryptid')) then
             if not silent then
                 attention_text({
                     text = localize('k_nope_ex'),
-                    scale = 1.3, 
+                    scale = 1.3,
                     hold = 1.4,
                     major = self,
                     backdrop_colour = G.C.DARK_EDITION,
