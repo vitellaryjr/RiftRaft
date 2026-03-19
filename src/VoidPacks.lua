@@ -17,7 +17,7 @@ for i,v in ipairs(booster_types) do
             },
             group_name = "Void Pack",
         },
-        loc_vars = function(self, info_queue, pack)
+        loc_vars = function(self, info_queue, card)
             local cfg = (card and card.ability) or self.config
 
             local size = math.max(1, cfg.extra + (G.GAME.modifiers.booster_size_mod or 0))
