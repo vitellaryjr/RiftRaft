@@ -8,10 +8,10 @@ SMODS.Voucher{
         },
     },
     loc_vars = function(self, info_queue, voucher)
-        return {vars = {voucher.ability.mult}}
+        return {vars = {voucher.ability.extra}}
     end,
     config = {
-        mult = 3,
+        extra = 3,
     },
     atlas = "RiftShop",
     pos = {x = 1, y = 1},
@@ -19,13 +19,20 @@ SMODS.Voucher{
         card:set_edition({negative = true}, true, true)
     end,
     redeem = function(self, voucher)
-        G.GAME.riftraft_negative_rate = math.max(G.GAME.riftraft_negative_rate or 0, voucher.ability.mult)
+        G.GAME.riftraft_negative_rate = math.max(G.GAME.riftraft_negative_rate or 0, voucher.ability.extra)
+    end,
+    calculate = function(self, card, context)
+        if context.modify_weights and context.pool_types['Edition'] and not G.GAME.used_vouchers['v_riftraft_negative_curate'] then
+            for _,obj in ipairs(context.pool) do
+                obj.weight = obj.weight * card.ability.extra
+            end
+        end
     end,
 }
-local negative_weight = G.P_CENTERS['e_negative'].get_weight
-G.P_CENTERS['e_negative'].get_weight = function(center)
-    return negative_weight(center) * (G.GAME.riftraft_negative_rate or 1)
-end
+-- local negative_weight = G.P_CENTERS['e_negative'].get_weight
+-- G.P_CENTERS['e_negative'].get_weight = function(center)
+--     return negative_weight(center) * (G.GAME.riftraft_negative_rate or 1)
+-- end
 SMODS.Voucher{
     key = "negative_consume",
     loc_txt = {
@@ -239,6 +246,13 @@ if next(SMODS.find_mod('Cryptid')) then
         end,
         redeem = function(self, voucher)
             G.GAME.riftraft_negative_rate = math.max(G.GAME.riftraft_negative_rate or 0, voucher.ability.mult)
+        end,
+        calculate = function(self, card, context)
+            if context.modify_weights and context.pool_types['Edition'] then
+                for _,obj in ipairs(context.pool) do
+                    obj.weight = obj.weight * card.ability.extra
+                end
+            end
         end,
         requires = {"v_riftraft_negative_consume"},
         dependencies = {

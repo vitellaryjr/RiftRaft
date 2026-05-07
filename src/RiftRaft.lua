@@ -60,6 +60,8 @@ SMODS.Gradient{
 local mod = SMODS.current_mod
 local config = mod.config
 
+mod.optional_features = {object_weights = true}
+
 G.FUNCS.riftraft_voidrate_config = function(e)
     RIFTRAFT.void_pack_rate = e.to_key/5
     config.void_pack_rate = e.to_key
