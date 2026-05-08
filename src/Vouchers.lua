@@ -13,6 +13,7 @@ SMODS.Voucher{
     config = {
         extra = 3,
     },
+    attributes = {'editions', 'negative'},
     atlas = "RiftShop",
     pos = {x = 1, y = 1},
     set_ability = function(self, card, initial, delay_sprites)
@@ -42,6 +43,7 @@ SMODS.Voucher{
             "be {C:dark_edition}Negative{}",
         },
     },
+    attributes = {'editions', 'negative'},
     atlas = "RiftShop",
     pos = {x = 2, y = 1},
     set_ability = function(self, card, initial, delay_sprites)
@@ -60,6 +62,7 @@ SMODS.Voucher{
             "from the {C:attention}shop{}",
         },
     },
+    attributes = {'rift', 'shop'},
     atlas = "RiftShop",
     pos = {x = 3, y = 1},
     redeem = function(self, voucher)
@@ -79,6 +82,7 @@ SMODS.Voucher{
     --         "sent to the {C:riftraft_void}Void{}",
     --     },
     -- },
+    attributes = {'void', 'shop'},
     atlas = "RiftShop",
     pos = {x = 4, y = 1},
     requires = {"v_riftraft_riftshop_retrieve"},
@@ -97,6 +101,7 @@ SMODS.Voucher{
             "per {C:attention}shop{}",
         },
     },
+    attributes = {'shop', 'booster'},
     atlas = "RiftShop",
     pos = {x = 1, y = 2},
     redeem = function(self, voucher)
@@ -131,6 +136,7 @@ SMODS.Voucher{
     --         "a {C:riftraft_void}Void{} Pack",
     --     },
     -- },
+    attributes = {'shop', 'booster'},
     atlas = "RiftShop",
     pos = {x = 2, y = 2},
     requires = {"v_riftraft_booster_plus"},
@@ -180,6 +186,7 @@ SMODS.Voucher{
             "booster pack",
         },
     },
+    attributes = {'booster'},
     atlas = "RiftShop",
     pos = {x = 3, y = 2},
     redeem = function(self, voucher)
@@ -203,6 +210,7 @@ SMODS.Voucher{
             "booster pack",
         },
     },
+    attributes = {'booster'},
     atlas = "RiftShop",
     pos = {x = 4, y = 2},
     requires = {"v_riftraft_cardpack_card"},
@@ -239,6 +247,7 @@ if next(SMODS.find_mod('Cryptid')) then
         config = {
             mult = 30,
         },
+        attributes = {'editions', 'negative'},
         atlas = "RiftShop",
         pos = {x = 1, y = 3},
         set_ability = function(self, card, initial, delay_sprites)
@@ -273,6 +282,7 @@ if next(SMODS.find_mod('Cryptid')) then
                 "of a {C:riftraft_void}Void{} card",
             },
         },
+        attributes = {'void', 'shop', 'void_retrieve'},
         atlas = "RiftShop",
         pos = {x = 2, y = 3},
         requires = {"v_riftraft_riftshop_send"},
@@ -297,6 +307,7 @@ if next(SMODS.find_mod('Cryptid')) then
                 "of {C:attention}each{} booster pack type",
             },
         },
+        attributes = {'shop', 'booster'},
         atlas = "RiftShop",
         pos = {x = 3, y = 3},
         requires = {"v_riftraft_booster_slut"},
@@ -317,6 +328,7 @@ if next(SMODS.find_mod('Cryptid')) then
                 "per booster pack",
             },
         },
+        attributes = {'booster'},
         atlas = "RiftShop",
         pos = {x = 4, y = 3},
         requires = {"v_riftraft_cardpack_card"},

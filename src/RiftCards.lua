@@ -67,6 +67,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 3},
     },
+    attributes = {'consumable', 'void', 'void_retrieve'},
     pos = {x = 1, y = 0},
     cost = 1,
     in_pool = function(self, args)
@@ -117,6 +118,7 @@ if RIFTRAFT.negative_playing_cards then
         config = {
             extra = {select = 5},
         },
+        attributes = {'playing_card', 'void', 'void_retrieve'},
         pos = {x = 2, y = 0},
         cost = 1,
         in_pool = function(self, args)
@@ -179,6 +181,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 1},
     },
+    attributes = {'joker', 'void', 'void_retrieve'},
     pos = {x = 3, y = 0},
     cost = 1,
     in_pool = function(self, args)
@@ -228,6 +231,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 5},
     },
+    attributes = {'void', 'void_retrieve'},
     pos = {x = 1, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -325,6 +329,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 5},
     },
+    attributes = {'consumable', 'void'},
     pos = {x = 3, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -401,6 +406,7 @@ RIFTRAFT.RiftCard{
         return {}
     end,
     config = {},
+    attributes = {'void', 'void_retrieve'},
     pos = {x = 4, y = 0},
     cost = 1,
     in_pool = function(self, args)
@@ -469,6 +475,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 5},
     },
+    attributes = {'generation', 'void'},
     pos = {x = 5, y = 0},
     cost = 1,
     in_pool = function(self, args)
@@ -523,6 +530,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 2, select = 1},
     },
+    attributes = {'generation', 'void'},
     pos = {x = 6, y = 0},
     cost = 1,
     in_pool = function(self, args)
@@ -573,6 +581,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 5},
     },
+    attributes = {'generation', 'void', 'tarot'},
     pos = {x = 1, y = 1},
     cost = 1,
     can_use = function(self, card)
@@ -624,6 +633,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 3},
     },
+    attributes = {'generation', 'void', 'planet'},
     pos = {x = 2, y = 1},
     cost = 1,
     can_use = function(self, card)
@@ -688,6 +698,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 3},
     },
+    attributes = {'generation', 'void', 'spectral'},
     pos = {x = 3, y = 1},
     cost = 1,
     can_use = function(self, card)
@@ -739,6 +750,7 @@ if next(SMODS.find_mod('Cryptid')) then
         config = {
             extra = {amount = 3},
         },
+        attributes = {'generation', 'void', 'code'},
         pos = {x = 8, y = 2},
         cost = 1,
         can_use = function(self, card)
@@ -790,6 +802,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 1},
     },
+    attributes = {'generation', 'void', 'joker'},
     pos = {x = 2, y = 2},
     cost = 1,
     can_use = function(self, card)
@@ -840,6 +853,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 1},
     },
+    attributes = {'void', 'void_retrieve', 'joker'},
     pos = {x = 6, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -907,6 +921,7 @@ RIFTRAFT.RiftCard{
         }
     },
     config = {},
+    attributes = {'generation', 'void', 'tag', 'joker'},
     pos = {x = 4, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -1016,6 +1031,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {select = 3},
     },
+    attributes = {'destroy_card', 'void'},
     pos = {x = 0, y = 1},
     cost = 1,
     in_pool = function(self, args)
@@ -1088,6 +1104,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {amount = 5},
     },
+    attributes = {'destroy_card', 'void', 'generation', 'joker', 'rarity'},
     pos = {x = 4, y = 1},
     cost = 1,
     in_pool = function(self, args)
@@ -1174,6 +1191,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {dollars = 2},
     },
+    attributes = {'destroy_card', 'void', 'economy'},
     pos = {x = 0, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -1241,6 +1259,7 @@ RIFTRAFT.RiftCard{
     config = {
         extra = {max = 50, current = 0},
     },
+    attributes = {'economy', 'void'},
     pos = {x = 5, y = 1},
     cost = 1,
     in_pool = function(self, args)
@@ -1280,6 +1299,7 @@ RIFTRAFT.RiftCard{
         }
     },
     config = {},
+    attributes = {'discard', 'void'},
     pos = {x = 6, y = 1},
     cost = 1,
     in_pool = function(self, args)
@@ -1317,15 +1337,13 @@ RIFTRAFT.RiftCard{
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = "e_negative", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
         return {
-            vars = {
-                RIFTRAFT.get_prob(card, card.ability.extra.chance),
-                card.ability.extra.chance,
-            }
+            vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.chance, 'misfortune')}
         }
     end,
     config = {
         extra = {chance = 4},
     },
+    attributes = {'editions', 'joker', 'chance', 'negative'},
     pos = {x = 5, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -1338,7 +1356,7 @@ RIFTRAFT.RiftCard{
         return false
     end,
     use = function(self, card, area)
-        if pseudorandom('wheel_of_fortune') < (RIFTRAFT.get_prob(card, card.ability.extra.chance) / card.ability.extra.chance) then
+        if SMODS.pseudorandom_probability(card, 'misfortune', 1, card.ability.extra.chance) then
             local temp_pool = {}
             for k,v in ipairs(G.jokers.cards) do
                 if v.ability.set == 'Joker' and not v.edition then
@@ -1385,6 +1403,7 @@ RIFTRAFT.RiftCard{
             "{s:0.8,C:riftraft_void}Missing{s:0.8} excluded",
         }
     },
+    attributes = {'generation', 'rift', 'consumable'},
     pos = {x = 7, y = 2},
     cost = 1,
     in_pool = function(self, args)
@@ -1451,6 +1470,7 @@ if RIFTRAFT.negative_playing_cards then
         config = {
             extra = {select = 1},
         },
+        attributes = {'editions', 'negative', 'modify_card'},
         atlas = 'RiftCards',
         pos = {x = 7, y = 0},
         cost = 3,
@@ -1493,6 +1513,7 @@ SMODS.Spectral{
     config = {
         extra = {select = 1},
     },
+    attributes = {'modify_card', 'seals'},
     atlas = 'RiftCards',
     pos = {x = 8, y = 0},
     cost = 3,
@@ -1541,6 +1562,7 @@ SMODS.Spectral{
     config = {
         extra = {amount = 1, select = 1},
     },
+    attributes = {'void', 'generation', 'void_retrieve'},
     atlas = 'RiftCards',
     pos = {x = 7, y = 1},
     cost = 3,
@@ -1612,6 +1634,7 @@ SMODS.Spectral{
         }
     },
     config = {},
+    attributes = {'void', 'generation', 'void_retrieve'},
     atlas = 'RiftCards',
     pos = {x = 8, y = 1},
     cost = 3,
@@ -1696,6 +1719,7 @@ SMODS.Seal{
         G.shared_seals[card.seal].role.draw_major = card
         G.shared_seals[card.seal]:draw_shader('negative', nil, card.ARGS.send_to_shader, nil, card.children.center)
     end,
+    attributes = {'destroy_card', 'rift', 'consumable'},
     inject = function(self)
         if RIFTRAFT.only_jokers then return end
         SMODS.Seal.inject(self)

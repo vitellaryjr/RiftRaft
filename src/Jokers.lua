@@ -21,24 +21,20 @@ RIFTRAFT.VoidJoker{
         },
     },
     config = {
-        -- extra = {chips = 0, chip_gain = 5},
-        extra = {mult = 0, mult_gain = 1},
+        extra = {mult_gain = 1},
     },
     loc_vars = function(self, info_queue, card)
-        -- return {vars = {card.ability.extra.chip_gain, card.ability.extra.chips}}
-        return {vars = {card.ability.extra.mult_gain, card.ability.extra.mult}}
+        return {vars = {card.ability.extra.mult_gain, card.ability.extra.mult_gain * (G.riftraft_void and (#G.riftraft_void.cards + #G.riftraft_rifthand.cards) or 0)}}
     end,
+    attributes = {'mult', 'scaling', 'void'},
     atlas = "RiftJokers",
     pos = {x = 3, y = 0},
     rarity = 1,
     cost = 4,
     blueprint_compat = true,
-    update = function(self, card, dt)
-        card.ability.extra.mult = card.ability.extra.mult_gain * (G.riftraft_void and (#G.riftraft_void.cards + #G.riftraft_rifthand.cards) or 0)
-    end,
     calculate = function(self, card, context)
         if context.cardarea == G.jokers and context.joker_main then
-            return {mult = card.ability.extra.mult}
+            return {mult = card.ability.extra.mult_gain * (G.riftraft_void and (#G.riftraft_void.cards + #G.riftraft_rifthand.cards) or 0)}
         end
     end,
 }
@@ -51,10 +47,10 @@ SMODS.Joker{
     loc_txt = {
         name = "Flint and Steel",
         text = {
-            "Gains {X:mult,C:white} X#1# {} Mult for every",
-            "consumable used during round,",
+            "Gains {X:mult,C:white}X#1#{} Mult for every",
+            "{C:attention}consumable{} used during round,",
             "resets at end of round",
-            "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+            "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
         },
     },
     config = {
@@ -63,6 +59,7 @@ SMODS.Joker{
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.xmult_gain, card.ability.extra.xmult}}
     end,
+    attributes = {'xmult', 'scaling', 'reset', 'consumable'},
     atlas = "RiftJokers",
     pos = {x = 2, y = 1},
     rarity = 2,
@@ -71,15 +68,19 @@ SMODS.Joker{
     calculate = function(self, card, context)
         if not context.blueprint then
             if context.using_consumeable and context.cardarea == G.jokers and G.GAME.blind.in_blind then
-                card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
-                return {message = "Upgrade!"}
+                SMODS.scale_card(card, {
+                    ref_table = card.ability.extra,
+                    ref_value = 'xmult',
+                    scalar_value = 'xmult_gain',
+                })
+                return nil, true
             end
-            if context.end_of_round and context.cardarea == G.jokers then
+            if context.end_of_round and context.main_eval then
                 card.ability.extra.xmult = 1
                 return {message = "Reset!"}
             end
         end
-        if context.joker_main and context.cardarea == G.jokers then
+        if context.joker_main then
             return {
                 x_mult = card.ability.extra.xmult
             }
@@ -91,9 +92,9 @@ RIFTRAFT.VoidJoker{
     loc_txt = {
         name = "Receipt",
         text = {
-            "This Joker gains {X:mult,C:white} X#1# {} Mult for",
+            "This Joker gains {X:mult,C:white}X#1#{} Mult for",
             "every {C:attention}#3#{} {C:dark_edition}Negative{} Jokers sold",
-            "{C:inactive}(Currently {C:attention}#4#{C:inactive}/#3# and {X:mult,C:white} X#2# {C:inactive} Mult)"
+            "{C:inactive}(Currently {C:attention}#4#{C:inactive}/#3# and {X:mult,C:white}X#2#{C:inactive} Mult)"
         },
     },
     config = {
@@ -103,6 +104,7 @@ RIFTRAFT.VoidJoker{
         info_queue[#info_queue+1] = {key = "e_negative", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
         return {vars = {card.ability.extra.xmult_gain, card.ability.extra.xmult, card.ability.extra.rounds, card.ability.extra.current}}
     end,
+    attributes = {'xmult', 'scaling', 'on_sell'},
     atlas = "RiftJokers",
     pos = {x = 3, y = 1},
     rarity = 2,
@@ -114,8 +116,13 @@ RIFTRAFT.VoidJoker{
                 card.ability.extra.current = card.ability.extra.current + 1
                 if card.ability.extra.current >= card.ability.extra.rounds then
                     card.ability.extra.current = 0
-                    card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
-                    return {message = "X"..card.ability.extra.xmult.." Mult"}
+                    SMODS.scale_card(card, {
+                        ref_table = card.ability.extra,
+                        ref_value = 'xmult',
+                        scalar_value = 'xmult_gain',
+                        message_key = 'a_xmult',
+                    })
+                    return nil, true
                 else
                     return {message = card.ability.extra.current.."/"..card.ability.extra.rounds}
                 end
@@ -133,7 +140,7 @@ RIFTRAFT.VoidJoker{
             "When {C:attention}Blind{} is selected, destroy",
             "all {C:dark_edition}Negative{} consumables and",
             "create a {C:riftraft_void}Rift{} card",
-            "{s:0.8,C:dark_edition}Negative {s:0.8,C:riftraft_void}Rift {s:0.8}cards excluded{}",
+            "{s:0.8,C:dark_edition}Negative {s:0.8,C:riftraft_void}Rift{s:0.8} cards excluded{}",
         },
     },
     config = {},
@@ -141,6 +148,7 @@ RIFTRAFT.VoidJoker{
         info_queue[#info_queue+1] = {key = "e_negative_consumable", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
         return {}
     end,
+    attributes = {'generation', 'rift', 'consumable', 'destroy_card'},
     atlas = "RiftJokers",
     pos = {x = 5, y = 0},
     rarity = 2,
@@ -190,9 +198,7 @@ RIFTRAFT.VoidJoker{
                 func = function()
                     if destroyed_any then
                         -- local new_card = create_card('Rift',G.consumeables, nil, nil, nil, nil, nil, 'nsixth')
-                        local new_card = SMODS.create_card{set = 'Rift', area = G.consumeables, key_append = 'nsixth'}
-                        new_card:add_to_deck()
-                        G.consumeables:emplace(new_card)
+                        SMODS.add_card{set = 'Rift', area = G.consumeables, key_append = 'nsixth'}
                     end
                     return true
                 end
@@ -239,6 +245,7 @@ RIFTRAFT.VoidJoker{
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.xmult_gain, card.ability.extra.xmult}}
     end,
+    attributes = {'xmult', 'scaling', 'void', 'joker'},
     atlas = "RiftJokers",
     pos = {x = 0, y = 2},
     rarity = 2,
@@ -275,11 +282,11 @@ RIFTRAFT.VoidJoker{
     },
     config = {
     	card_limit = 1,
-        extra = {amount = 1},
     },
     loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.extra.amount}}
+        return {vars = {card.ability.card_limit}}
     end,
+    attributes = {'joker_slot'},
     atlas = "RiftJokers",
     pos = {x = 2, y = 0},
     rarity = 3,
@@ -302,6 +309,7 @@ SMODS.Joker{
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.xmult}}
     end,
+    attributes = {'xmult', 'consumable'},
     atlas = "RiftJokers",
     pos = {x = 1, y = 1},
     rarity = 3,
@@ -351,42 +359,16 @@ SMODS.Joker{
         for _,v in ipairs({"foil", "holo", "polychrome"}) do
             local t = G.P_CENTERS['e_'..v]
             info_queue[#info_queue + 1] = t
-            -- if G.P_CENTERS['e_'..v].loc_vars and type(G.P_CENTERS['e_'..v].loc_vars) == 'function' then
-            --     local res = G.P_CENTERS['e_'..v]:loc_vars(info_queue, card) or {}
-            --     t.vars = res.vars
-            --     t.key = res.key or t.key
-            --     t.set = res.set or t.set
-            -- end
         end
         return {vars = {card.ability.extra.chips, card.ability.extra.mult, card.ability.extra.xmult}}
     end,
+    attributes = {'editions', 'chips', 'mult', 'xmult'},
     atlas = "RiftJokers",
     pos = {x = 4, y = 1},
     rarity = 3,
     cost = 8,
     blueprint_compat = true,
     calculate = function(self, card, context)
-        -- [[ orig behavior ]]
-        -- if context.joker_main and context.cardarea == G.jokers then
-        --     local has_edition = {}
-        --     for k,v in ipairs(context.scoring_hand) do
-        --         if v.edition then
-        --             for kk,vv in pairs(v.edition) do
-        --                 if vv == true then
-        --                     has_edition[kk] = true
-        --                 end
-        --             end
-        --         end
-        --     end
-        --     if has_edition.foil and has_edition.holo and has_edition.polychrome then
-        --         return {
-        --             chips = card.ability.extra.chips,
-        --             mult = card.ability.extra.mult,
-        --             x_mult = card.ability.extra.xmult,
-        --         }
-        --     end
-        -- end
-
         local played = nil
         if context.individual and context.cardarea == G.play and context.other_card and context.other_card.edition then
             played = context.other_card
@@ -501,6 +483,7 @@ RIFTRAFT.VoidJoker{
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.copied_joker and localize{type = 'name_text', key = card.ability.copied_joker, set = 'Joker'} or localize('k_none')}}
     end,
+    attributes = {'copying', 'void'},
     atlas = "RiftJokers",
     pos = {x = 1, y = 2},
     rarity = 3,
@@ -607,6 +590,7 @@ RIFTRAFT.VoidJoker{
         },
     },
     config = {},
+    attributes = {'void'},
     atlas = "RiftJokers",
     pos = {x = 2, y = 2},
     rarity = 3,
@@ -636,22 +620,21 @@ if RIFTRAFT.negative_playing_cards then
             },
         },
         config = {
-            extra = {size = 5, mult = 0, mult_gain = 4},
+            extra = {size = 5, mult_gain = 4},
         },
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.extra.mult_gain, card.ability.extra.size, card.ability.extra.mult}}
+            local mult = card.ability.extra.mult_gain * math.max((G.hand and #G.hand.cards or 8) + (G.play and #G.play.cards or 0) - card.ability.extra.size, 0)
+            return {vars = {card.ability.extra.mult_gain, card.ability.extra.size, mult}}
         end,
+        attributes = {'mult', 'hand_size'},
         atlas = "RiftJokers",
         pos = {x = 4, y = 0},
         rarity = 1,
         cost = 4,
         blueprint_compat = true,
-        update = function(self, card, dt)
-            card.ability.extra.mult = card.ability.extra.mult_gain * math.max((G.hand and #G.hand.cards or 8) + (G.play and #G.play.cards or 0) - card.ability.extra.size, 0)
-        end,
         calculate = function(self, card, context)
-            if context.cardarea == G.jokers and context.joker_main then
-                return {mult = card.ability.extra.mult}
+            if context.joker_main then
+                return {mult = card.ability.extra.mult_gain * math.max((G.hand and #G.hand.cards or 8) + (G.play and #G.play.cards or 0) - card.ability.extra.size, 0)}
             end
         end,
     }
@@ -670,6 +653,7 @@ if RIFTRAFT.negative_playing_cards then
             info_queue[#info_queue+1] = {key = "e_negative_playing_card", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
             return {}
         end,
+        attributes = {'mult', 'editions', 'negative'},
         atlas = "RiftJokers",
         pos = {x = 0, y = 1},
         rarity = 2,
@@ -728,13 +712,14 @@ if RIFTRAFT.negative_playing_cards then
             info_queue[#info_queue+1] = {key = "e_negative_playing_card", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
             return {vars = {card.ability.h_size}}
         end,
+        attributes = {'hand_size', 'modify_card', 'editions', 'negative'},
         atlas = "RiftJokers",
         pos = {x = 5, y = 1},
         rarity = 3,
         cost = 8,
         blueprint_compat = false,
         calculate = function(self, card, context)
-            if context.end_of_round and context.cardarea == G.jokers and not context.blueprint then
+            if context.end_of_round and context.main_eval and not context.blueprint then
                 G.E_MANAGER:add_event(Event({
                     trigger = 'before',
                     delay = 0.5,
@@ -769,13 +754,14 @@ if RIFTRAFT.negative_playing_cards then
             info_queue[#info_queue+1] = {key = "e_negative_playing_card", set = "Edition", config = {extra = G.P_CENTERS['e_negative'].config.card_limit}}
             return {vars = {localize(card.ability.extra.poker_hand, 'poker_hands')}}
         end,
+        attributes = {'hand_type', 'modify_card', 'editions', 'negative'},
         atlas = "RiftJokers",
         pos = {x = 3, y = 2},
         rarity = 2,
         cost = 6,
         blueprint_compat = false,
         calculate = function(self, card, context)
-            if context.after and context.cardarea == G.jokers and next(context.poker_hands[card.ability.extra.poker_hand]) and not context.blueprint then
+            if context.after and next(context.poker_hands[card.ability.extra.poker_hand]) and not context.blueprint then
                 local lowest
                 for i,v in ipairs(context.scoring_hand) do
                     if not lowest or ((SMODS.Ranks[v.base.value].id <= SMODS.Ranks[lowest.base.value].id) and not v.edition) then
@@ -829,6 +815,7 @@ SMODS.Joker{
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.amount}}
     end,
+    attributes = {'generation'},
     atlas = "RiftJokers",
     pos = {x = 0, y = 0},
     soul_pos = {x = 1, y = 0},
@@ -965,6 +952,7 @@ if next(SMODS.find_mod('Cryptid')) then
         loc_vars = function(self, info_queue, card)
             return {vars = {card.ability.extra.slots, card.ability.extra.emult}}
         end,
+        attributes = {'negative', 'destroy_card', 'joker_slot', 'consumable_slot'},
         generate_ui = function(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
             SMODS.Center.generate_ui(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
             if not G.jokers then return end

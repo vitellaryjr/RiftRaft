@@ -29,6 +29,7 @@ for i,v in ipairs(booster_types) do
             choose = v[2],
             extra = v[3],
         },
+        attributes = {'void'},
         create_card = function(self, booster, i)
             local data = {
                 set = "Rift",
@@ -203,6 +204,7 @@ SMODS.Tag{
             "{C:riftraft_void}Mega Void Pack",
         },
     },
+    attributes = {'booster', 'void'},
     atlas = "RiftTags",
     pos = {x = 0, y = 0},
     min_ante = 2,
@@ -250,6 +252,7 @@ SMODS.Tag{
         }
     end,
     config = {amount = 2},
+    attributes = {'void', 'void_retrieve'},
     atlas = "RiftTags",
     pos = {x = 1, y = 0},
     min_ante = 2,

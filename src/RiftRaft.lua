@@ -112,6 +112,11 @@ RIFTRAFT.get_prob = function(card, den)
     return num
 end
 
+SMODS.Attribute{key = 'void'}
+SMODS.Attribute{key = 'void_retrieve'}
+SMODS.Attribute{key = 'negative'}
+SMODS.Attribute{key = 'rift'}
+
 assert(SMODS.load_file("src/RiftCards.lua"))()
 assert(SMODS.load_file("src/VoidPacks.lua"))()
 assert(SMODS.load_file("src/Vouchers.lua"))()
